@@ -26,74 +26,111 @@
         
         header {
             text-align: center;
-            padding: 30px 0;
+            padding: 20px 0;
             background: #2c3e50;
             color: white;
             border-radius: 10px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            font-size: 2rem;
+            margin-bottom: 8px;
         }
         
         .subtitle {
-            font-size: 1.2rem;
+            font-size: 1rem;
             opacity: 0.8;
         }
         
         .main-content {
             display: flex;
-            gap: 30px;
-            margin-bottom: 30px;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 20px;
         }
         
-        @media (max-width: 768px) {
+        @media (min-width: 768px) {
             .main-content {
-                flex-direction: column;
+                flex-direction: row;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            header {
+                padding: 30px 0;
+                margin-bottom: 30px;
             }
         }
         
         .control-panel {
-            flex: 1;
             background: white;
             border-radius: 10px;
-            padding: 25px;
+            padding: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        @media (min-width: 768px) {
+            .control-panel {
+                flex: 1;
+                max-height: none;
+                overflow-y: visible;
+            }
         }
         
         .book-section {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 1px solid #eee;
         }
         
         .book-title {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             color: #2c3e50;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
             border-bottom: 2px solid #3498db;
+        }
+        
+        @media (min-width: 768px) {
+            .book-title {
+                font-size: 1.4rem;
+            }
         }
         
         .lesson-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 10px;
         }
         
         .lesson-checkbox {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
+            gap: 6px;
+            padding: 6px 10px;
             background: #f8f9fa;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
             border: 1px solid #e0e0e0;
+            font-size: 0.9rem;
+        }
+        
+        @media (min-width: 768px) {
+            .lesson-checkbox {
+                padding: 8px 12px;
+                font-size: 1rem;
+            }
         }
         
         .lesson-checkbox:hover {
@@ -107,24 +144,31 @@
         
         .controls {
             background: #f8f9fa;
-            padding: 20px;
+            padding: 15px;
             border-radius: 8px;
-            margin-top: 20px;
+            margin-top: 15px;
+        }
+        
+        @media (min-width: 768px) {
+            .controls {
+                padding: 20px;
+                margin-top: 20px;
+            }
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 500;
         }
         
         input[type="number"] {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 1rem;
@@ -133,14 +177,21 @@
         .btn {
             display: inline-block;
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background: #3498db;
             color: white;
             border: none;
             border-radius: 6px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
             transition: background 0.3s;
+        }
+        
+        @media (min-width: 768px) {
+            .btn {
+                padding: 14px;
+                font-size: 1.1rem;
+            }
         }
         
         .btn:hover {
@@ -148,32 +199,67 @@
         }
         
         .result-area {
-            flex: 2;
             background: white;
             border-radius: 10px;
-            padding: 25px;
+            padding: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            min-height: 400px;
         }
         
+        @media (min-width: 768px) {
+            .result-area {
+                flex: 2;
+            }
+        }
+        
+        /* PERBAIKAN: Grid layout yang lebih responsif untuk desktop */
         .kanji-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        @media (min-width: 1024px) {
+            .kanji-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 18px;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .kanji-grid {
+                grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+                gap: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .kanji-grid {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+                gap: 10px;
+            }
         }
         
         .kanji-card {
             aspect-ratio: 1/1;
             perspective: 1000px;
             cursor: pointer;
+            position: relative;
+            z-index: 1;
+            transition: z-index 0.3s;
         }
         
+        .kanji-card.active {
+            z-index: 10;
+        }
+
         .card-inner {
             position: relative;
             width: 100%;
             height: 100%;
             text-align: center;
-            transition: transform 0.6s;
+            transition: transform 0.5s ease;
             transform-style: preserve-3d;
         }
         
@@ -193,7 +279,13 @@
             border-radius: 8px;
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
-            padding: 10px;
+            padding: 8px;
+        }
+        
+        @media (min-width: 768px) {
+            .card-front, .card-back {
+                padding: 10px;
+            }
         }
         
         .card-front {
@@ -207,22 +299,93 @@
             color: #2c3e50;
         }
         
+        /* PERBAIKAN: Ukuran font yang responsif berdasarkan jumlah karakter */
         .kanji-character {
-            font-size: 3.5rem;
+            font-size: 2rem;
             font-weight: bold;
+            line-height: 1.2;
+            max-width: 100%;
+            word-break: break-all;
+        }
+        
+        /* Untuk kanji dengan 3 karakter atau lebih */
+        .kanji-card.multi-char .kanji-character {
+            font-size: 1.6rem;
+        }
+        
+        /* Untuk kanji dengan 4 karakter atau lebih */
+        .kanji-card.many-char .kanji-character {
+            font-size: 1.3rem;
+        }
+        
+        @media (min-width: 480px) {
+            .kanji-character {
+                font-size: 2.2rem;
+            }
+            
+            .kanji-card.multi-char .kanji-character {
+                font-size: 1.8rem;
+            }
+            
+            .kanji-card.many-char .kanji-character {
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .kanji-character {
+                font-size: 2.5rem;
+            }
+            
+            .kanji-card.multi-char .kanji-character {
+                font-size: 2rem;
+            }
+            
+            .kanji-card.many-char .kanji-character {
+                font-size: 1.7rem;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .kanji-character {
+                font-size: 2.8rem;
+            }
+            
+            .kanji-card.multi-char .kanji-character {
+                font-size: 2.2rem;
+            }
+            
+            .kanji-card.many-char .kanji-character {
+                font-size: 1.8rem;
+            }
         }
         
         .kanji-meaning {
-            font-size: 1rem;
-            margin-top: 5px;
+            font-size: 0.85rem;
+            margin-top: 4px;
             text-align: center;
+            word-break: break-word;
+            line-height: 1.3;
+        }
+        
+        @media (min-width: 768px) {
+            .kanji-meaning {
+                font-size: 0.9rem;
+            }
         }
         
         .kanji-reading {
-            font-size: 0.9rem;
-            margin-top: 5px;
+            font-size: 0.8rem;
+            margin-top: 4px;
             color: #7f8c8d;
             font-style: italic;
+            line-height: 1.3;
+        }
+        
+        @media (min-width: 768px) {
+            .kanji-reading {
+                font-size: 0.85rem;
+            }
         }
         
         .kanji-card:hover .card-front {
@@ -232,53 +395,83 @@
         
         .info-panel {
             text-align: center;
-            padding: 20px;
+            padding: 15px;
             background: #f8f9fa;
             border-radius: 10px;
-            margin-top: 20px;
-            font-size: 1.1rem;
+            margin-top: 15px;
+            font-size: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+            .info-panel {
+                padding: 20px;
+                margin-top: 20px;
+                font-size: 1.1rem;
+            }
         }
         
         .instructions {
             background: #e8f4fc;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
-            margin-top: 30px;
+            margin-top: 20px;
             border-left: 4px solid #3498db;
         }
         
+        @media (min-width: 768px) {
+            .instructions {
+                padding: 20px;
+                margin-top: 30px;
+            }
+        }
+        
         .instructions h3 {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             color: #2c3e50;
         }
         
         .instructions ul {
-            padding-left: 20px;
+            padding-left: 18px;
         }
         
         .instructions li {
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+        
+        @media (min-width: 768px) {
+            .instructions li {
+                margin-bottom: 8px;
+                font-size: 1rem;
+            }
         }
         
         .counter {
             background: #3498db;
             color: white;
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 20px;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             margin-left: 5px;
         }
         
         .no-kanji {
             text-align: center;
-            padding: 50px;
+            padding: 30px;
             color: #7f8c8d;
-            font-size: 1.2rem;
+            font-size: 1rem;
             grid-column: 1 / -1;
         }
         
+        @media (min-width: 768px) {
+            .no-kanji {
+                padding: 50px;
+                font-size: 1.2rem;
+            }
+        }
+        
         .selected-count {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #7f8c8d;
             margin-top: 5px;
         }
@@ -287,11 +480,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .select-all {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #3498db;
             cursor: pointer;
             padding: 3px 8px;
@@ -304,17 +497,24 @@
         
         .flip-hint {
             text-align: center;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #7f8c8d;
-            margin-top: 15px;
+            margin-top: 12px;
         }
         
         .stats-bar {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
             border-bottom: 1px solid #eee;
+        }
+        
+        @media (min-width: 768px) {
+            .stats-bar {
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+            }
         }
         
         .stat-item {
@@ -323,14 +523,26 @@
         }
         
         .stat-value {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: bold;
             color: #3498db;
         }
         
+        @media (min-width: 768px) {
+            .stat-value {
+                font-size: 1.5rem;
+            }
+        }
+        
         .stat-label {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #7f8c8d;
+        }
+        
+        @media (min-width: 768px) {
+            .stat-label {
+                font-size: 0.85rem;
+            }
         }
     </style>
 </head>
@@ -420,7 +632,6 @@
                 <li>Klik tombol "Tampilkan Kanji" untuk menampilkan kanji secara acak dari bab yang dipilih</li>
                 <li><strong>Klik kartu</strong> untuk melihat arti dan cara baca kanji</li>
                 <li>Klik lagi untuk kembali ke tampilan kanji</li>
-                <li>Gunakan tombol "Dikuasai" untuk menandai kanji yang sudah Anda hafal</li>
                 <li>Untuk latihan tambahan, ganti bab atau jumlah kanji yang ditampilkan</li>
             </ul>
         </div>
@@ -479,7 +690,7 @@
                     { kanji: "低い", meaning: "rendah", reading: "ひくい" },
                     { kanji: "前", meaning: "depan", reading: "まえ" },
                     { kanji: "後ろ", meaning: "belakang", reading: "うしろ" },
-                    { kanji: "横", meaning: "samping", reading: "よこ" },
+                    { kanji: "横", meaning: "samping", reading: "よコ" },
                     { kanji: "入口", meaning: "pintu masuk", reading: "いりぐち" },
                     { kanji: "出口", meaning: "pintu keluar", reading: "でぐち" },
                     { kanji: "～階", meaning: "lantai", reading: "～かい" },
@@ -575,7 +786,7 @@
                     { kanji: "場所", meaning: "tempat", reading: "ばしょ" },
                     { kanji: "駅", meaning: "stasiun", reading: "えき" },
                     { kanji: "受付", meaning: "resepsionis", reading: "うけつけ" },
-                    { kanji: "門", meaning: "gerbang", reading: "もん" },
+                    { kanji: "门", meaning: "gerbang", reading: "もん" },
                     { kanji: "電車", meaning: "kereta listrik", reading: "でんしゃ" },
                     { kanji: "待つ", meaning: "menunggu", reading: "まつ" },
                     { kanji: "止まる", meaning: "berhenti", reading: "とまる" },
@@ -742,7 +953,7 @@
                     { kanji: "泣く", meaning: "menangis", reading: "なく" }
                 ],
                 "第三課": [
-                    { kanji: "注文", meaning: "pesanan (makanan/minuman)", reading: "ちゅうもん" },
+                    { kanji: "注文", meaning: "pesanan (makanan/minuman)", reading: "ちゅうモン" },
                     { kanji: "会計", meaning: "pembayaran (tagihan)", reading: "かいけい" },
                     { kanji: "予約", meaning: "reservasi", reading: "よやく" },
                     { kanji: "電話番号", meaning: "nomor telepon", reading: "でんわばんごう" },
@@ -759,7 +970,7 @@
                     { kanji: "量", meaning: "jumlah/takaran", reading: "りょう" },
                     { kanji: "～方", meaning: "cara～/metode～ (akhiran)", reading: "～かた" },
                     { kanji: "～屋", meaning: "toko～/ahli～ (akhiran)", reading: "～や" },
-                    { kanji: "満足", meaning: "puas/kepuasan", reading: "まんぞく" },
+                    { kanji: "満足", meaning: "puas/kepuasan", reading: "まんぞク" },
                     { kanji: "切る", meaning: "memotong/memutuskan", reading: "きる" },
                     { kanji: "焼く", meaning: "membakar/memanggang", reading: "やく" },
                     { kanji: "入れる", meaning: "memasukkan/menambahkan", reading: "いれる" }
@@ -993,7 +1204,7 @@
             return selectedKanji;
         }
 
-        // Fungsi untuk menampilkan kanji sebagai flashcard
+        // Fungsi untuk menampilkan kanji sebagai flashcard (DIPERBAIKI)
         function displayKanji() {
             const kanjiContainer = document.getElementById('kanji-container');
             kanjiContainer.innerHTML = '';
@@ -1017,6 +1228,14 @@
             displayKanji.forEach(item => {
                 const kanjiCard = document.createElement('div');
                 kanjiCard.className = 'kanji-card';
+                
+                // Tambahkan kelas berdasarkan jumlah karakter
+                if (item.kanji.length >= 4) {
+                    kanjiCard.classList.add('many-char');
+                } else if (item.kanji.length === 3) {
+                    kanjiCard.classList.add('multi-char');
+                }
+                
                 kanjiCard.innerHTML = `
                     <div class="card-inner">
                         <div class="card-front">
@@ -1031,11 +1250,31 @@
                 `;
                 
                 kanjiCard.addEventListener('click', function() {
-                    this.classList.toggle('flipped');
+                    // Jika kartu ini sudah terbuka, tutup saja
+                    if (this.classList.contains('flipped')) {
+                        this.classList.remove('flipped');
+                        this.classList.remove('active');
+                        return;
+                    }
+                    
+                    // Tutup semua kartu lain yang terbuka
+                    const allCards = document.querySelectorAll('.kanji-card');
+                    allCards.forEach(card => {
+                        if (card !== this && card.classList.contains('flipped')) {
+                            card.classList.remove('flipped');
+                            card.classList.remove('active');
+                        }
+                    });
+                    
+                    // Buka kartu ini
+                    this.classList.add('flipped');
+                    this.classList.add('active');
+                    
+                    // Tandai sebagai diulas jika belum
                     if (!this.dataset.reviewed) {
-                        this.dataset.reviewed = true;
-                        document.getElementById('reviewed-kanji').textContent = 
-                            parseInt(document.getElementById('reviewed-kanji').textContent) + 1;
+                        this.dataset.reviewed = 'true';
+                        const reviewedCount = parseInt(document.getElementById('reviewed-kanji').textContent) + 1;
+                        document.getElementById('reviewed-kanji').textContent = reviewedCount;
                     }
                 });
                 
