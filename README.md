@@ -44,6 +44,48 @@
             opacity: 0.8;
         }
         
+        /* PERBAIKAN: Tombol sticky untuk desktop */
+        .sticky-top-button {
+            display: none;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            margin-bottom: 15px;
+        }
+        
+        @media (min-width: 768px) {
+            .sticky-top-button {
+                display: block;
+            }
+        }
+        
+        .sticky-btn {
+            width: 100%;
+            padding: 14px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px;
+        }
+        
+        .sticky-btn:hover {
+            background: #2980b9;
+        }
+        
+        /* Tombol Reset di Sticky */
+        .sticky-btn-reset {
+            background: #e74c3c;
+        }
+        
+        .sticky-btn-reset:hover {
+            background: #c0392b;
+        }
+        
         .main-content {
             display: flex;
             flex-direction: column;
@@ -84,6 +126,16 @@
                 flex: 1;
                 max-height: none;
                 overflow-y: visible;
+            }
+            
+            /* PERBAIKAN: Jangan sembunyikan tombol reset pada desktop */
+            .controls .btn-reset {
+                display: block !important;
+            }
+            
+            /* Sembunyikan hanya tombol "Tampilkan Kanji" di control panel pada desktop */
+            .controls .btn:not(.btn-reset) {
+                display: none;
             }
         }
         
@@ -185,6 +237,7 @@
             font-size: 1rem;
             cursor: pointer;
             transition: background 0.3s;
+            margin-bottom: 10px;
         }
         
         @media (min-width: 768px) {
@@ -196,6 +249,15 @@
         
         .btn:hover {
             background: #2980b9;
+        }
+        
+        /* Tombol Reset */
+        .btn-reset {
+            background: #e74c3c;
+        }
+        
+        .btn-reset:hover {
+            background: #c0392b;
         }
         
         .result-area {
@@ -544,6 +606,27 @@
                 font-size: 0.85rem;
             }
         }
+        
+        /* Statistik baru */
+        .stats-info {
+            display: flex;
+            justify-content: space-between;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .reset-notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -552,6 +635,12 @@
             <h1>Latihan Kanji</h1>
             <p class="subtitle">Aplikasi Flashcard Kanji Interaktif</p>
         </header>
+        
+        <!-- PERBAIKAN: Tombol sticky untuk desktop - TAMBAH TOMBOL RESET -->
+        <div class="sticky-top-button">
+            <button id="sticky-show-kanji" class="sticky-btn">Tampilkan Kanji Baru</button>
+            <button id="sticky-reset-kanji" class="sticky-btn sticky-btn-reset">Reset Kanji yang Sudah Muncul</button>
+        </div>
         
         <div class="main-content">
             <div class="control-panel">
@@ -592,13 +681,21 @@
                         <label for="kanji-count">Jumlah Kanji yang Ditampilkan:</label>
                         <input type="number" id="kanji-count" min="1" max="100" value="20">
                     </div>
-                    <button id="show-kanji" class="btn">Tampilkan Kanji</button>
+                    <button id="show-kanji" class="btn">Tampilkan Kanji Baru</button>
+                    <button id="reset-kanji" class="btn btn-reset">Reset Kanji yang Sudah Muncul</button>
                     <p class="selected-count">Bab terpilih: <span id="selected-lessons-count">0</span></p>
+                    <div class="reset-notice" id="reset-notice" style="display: none;">
+                        Kanji yang sudah muncul telah direset. Sekarang Anda bisa melihat semua kanji lagi.
+                    </div>
                 </div>
             </div>
             
             <div class="result-area">
                 <h2>Flashcard Kanji</h2>
+                <div class="stats-info">
+                    <div>Kanji yang sudah muncul: <strong id="displayed-count">0</strong></div>
+                    <div>Kanji tersisa: <strong id="remaining-count">0</strong></div>
+                </div>
                 <div class="stats-bar">
                     <div class="stat-item">
                         <div class="stat-value" id="total-kanji">0</div>
@@ -630,9 +727,10 @@
                 <li>Pilih bab-bab kanji yang ingin Anda pelajari dari daftar yang tersedia</li>
                 <li>Tentukan jumlah kanji yang ingin ditampilkan (maksimal 100)</li>
                 <li>Klik tombol "Tampilkan Kanji" untuk menampilkan kanji secara acak dari bab yang dipilih</li>
+                <li><strong>Kanji yang sudah pernah muncul tidak akan ditampilkan lagi</strong> (kecuali direset)</li>
+                <li>Gunakan tombol "Reset Kanji yang Sudah Muncul" untuk mengatur ulang daftar kanji yang sudah muncul</li>
                 <li><strong>Klik kartu</strong> untuk melihat arti dan cara baca kanji</li>
                 <li>Klik lagi untuk kembali ke tampilan kanji</li>
-                <li>Untuk latihan tambahan, ganti bab atau jumlah kanji yang ditampilkan</li>
             </ul>
         </div>
     </div>
@@ -665,7 +763,7 @@
                 ],
                 "第九課～第十八課": [
                     { kanji: "朝", meaning: "pagi", reading: "あさ" },
-                    { kanji: "昼", meaning: "siang", reading: "ひる" },
+                    { kanji: "昼", meaning: "siang", reading: "ひル" },
                     { kanji: "夜", meaning: "malam", reading: "よる" },
                     { kanji: "読みます", meaning: "membaca", reading: "よみます" },
                     { kanji: "聞きます", meaning: "mendengar", reading: "ききます" },
@@ -796,7 +894,7 @@
                 "第八課": [
                     { kanji: "お金", meaning: "uang", reading: "おかね" },
                     { kanji: "食事", meaning: "makan (aktivitas)/hidangan", reading: "しょくじ" },
-                    { kanji: "博物館", meaning: "museum", reading: "はくぶつかん" },
+                    { kanji: "博物館", meaning: "museum", reading: "はクぶつかん" },
                     { kanji: "動物園", meaning: "kebun binatang", reading: "どうぶつえん" },
                     { kanji: "試合", meaning: "pertandingan/perlombaan", reading: "しあい" },
                     { kanji: "楽しい", meaning: "menyenangkan", reading: "たのしい" },
@@ -889,7 +987,7 @@
                 ],
                 "第十六課": [
                     { kanji: "体", meaning: "tubuh/badan", reading: "からだ" },
-                    { kanji: "顔", meaning: "wajah", reading: "かお" },
+                    { kanji: "颜", meaning: "wajah", reading: "かお" },
                     { kanji: "目", meaning: "mata", reading: "め" },
                     { kanji: "耳", meaning: "telinga", reading: "みみ" },
                     { kanji: "口", meaning: "mulut", reading: "くち" },
@@ -955,7 +1053,7 @@
                 "第三課": [
                     { kanji: "注文", meaning: "pesanan (makanan/minuman)", reading: "ちゅうモン" },
                     { kanji: "会計", meaning: "pembayaran (tagihan)", reading: "かいけい" },
-                    { kanji: "予約", meaning: "reservasi", reading: "よやく" },
+                    { kanji: "予約", meaning: "reservasi", reading: "よやク" },
                     { kanji: "電話番号", meaning: "nomor telepon", reading: "でんわばんごう" },
                     { kanji: "～様", meaning: "Tuan/Nyonya (sebutan hormat)", reading: "～さま" },
                     { kanji: "ご飯", meaning: "nasi/makanan", reading: "ごはん" },
@@ -1085,7 +1183,7 @@
                     { kanji: "利用する", meaning: "menggunakan/memanfaatkan", reading: "りようする" }
                 ],
                 "第十四課": [
-                    { kanji: "外国", meaning: "luar negeri", reading: "がいこく" },
+                    { kanji: "外国", meaning: "luar negeri", reading: "がいこク" },
                     { kanji: "情報", meaning: "informasi", reading: "じょうほう" },
                     { kanji: "相談", meaning: "konsultasi", reading: "そうだん" },
                     { kanji: "質問", meaning: "pertanyaan", reading: "しつもん" },
@@ -1139,12 +1237,15 @@
                     { kanji: "建てる", meaning: "membangun (bangunan)", reading: "たてる" },
                     { kanji: "続ける", meaning: "melanjutkan", reading: "つづける" },
                     { kanji: "考える", meaning: "berpikir/mempertimbangkan", reading: "かんがえる" },
-                    { kanji: "役に立つ", meaning: "berguna/bermanfaat", reading: "やくにたつ" },
+                    { kanji: "役に立つ", meaning: "berguna/bermanfaat", reading: "やクにたつ" },
                     { kanji: "卒業する", meaning: "lulus (dari sekolah)", reading: "そつぎょうする" },
                     { kanji: "留学する", meaning: "belajar di luar negeri", reading: "りゅうがくする" }
                 ]
             }
         };
+
+        // Variabel untuk menyimpan kanji yang sudah ditampilkan
+        let displayedKanji = JSON.parse(localStorage.getItem('displayedKanji')) || [];
 
         // Fungsi untuk membuat checkbox pelajaran
         function createLessonCheckboxes() {
@@ -1215,16 +1316,41 @@
             if (selectedKanji.length === 0) {
                 kanjiContainer.innerHTML = '<div class="no-kanji">Silakan pilih minimal satu bab kanji</div>';
                 updateStats(0, 0, 0);
+                updateKanjiCounts(selectedKanji);
                 return;
             }
             
-            // Update stats
-            updateStats(selectedKanji.length, 0, 0);
+            // Filter kanji yang belum pernah ditampilkan
+            const availableKanji = selectedKanji.filter(item => 
+                !displayedKanji.includes(item.kanji)
+            );
             
-            // Acak kanji
-            const shuffledKanji = [...selectedKanji].sort(() => Math.random() - 0.5);
+            if (availableKanji.length === 0) {
+                kanjiContainer.innerHTML = '<div class="no-kanji">Semua kanji dari bab yang dipilih sudah pernah ditampilkan. Klik tombol reset untuk mengatur ulang.</div>';
+                updateStats(selectedKanji.length, 0, 0);
+                updateKanjiCounts(selectedKanji);
+                return;
+            }
+            
+            // Acak kanji yang tersedia
+            const shuffledKanji = [...availableKanji].sort(() => Math.random() - 0.5);
             const displayKanji = shuffledKanji.slice(0, Math.min(kanjiCount, shuffledKanji.length));
             
+            // Tambahkan ke daftar kanji yang sudah ditampilkan
+            displayKanji.forEach(item => {
+                if (!displayedKanji.includes(item.kanji)) {
+                    displayedKanji.push(item.kanji);
+                }
+            });
+            
+            // Simpan ke localStorage
+            localStorage.setItem('displayedKanji', JSON.stringify(displayedKanji));
+            
+            // Update statistik
+            updateStats(selectedKanji.length, 0, 0);
+            updateKanjiCounts(selectedKanji);
+            
+            // Tampilkan kanji
             displayKanji.forEach(item => {
                 const kanjiCard = document.createElement('div');
                 kanjiCard.className = 'kanji-card';
@@ -1289,6 +1415,16 @@
             document.getElementById('mastered-kanji').textContent = mastered;
         }
 
+        // Fungsi untuk update jumlah kanji yang sudah muncul dan tersisa
+        function updateKanjiCounts(selectedKanji) {
+            const displayedCount = displayedKanji.length;
+            const totalSelected = selectedKanji.length;
+            const remainingCount = totalSelected - displayedCount;
+            
+            document.getElementById('displayed-count').textContent = displayedCount;
+            document.getElementById('remaining-count').textContent = remainingCount > 0 ? remainingCount : 0;
+        }
+
         // Fungsi untuk memilih semua bab dalam satu buku
         function toggleSelectAll(bookName) {
             const bookContainer = bookName === 'Buku Dasar' ? 
@@ -1307,18 +1443,67 @@
             // Update count
             const selectedCount = document.querySelectorAll('input[name="lesson"]:checked').length;
             document.getElementById('selected-lessons-count').textContent = selectedCount;
+            
+            // Update kanji counts
+            const selectedKanji = getSelectedKanji();
+            updateKanjiCounts(selectedKanji);
+        }
+
+        // Fungsi untuk reset kanji yang sudah muncul
+        function resetDisplayedKanji() {
+            displayedKanji = [];
+            localStorage.removeItem('displayedKanji');
+            
+            // Tampilkan notifikasi
+            const notice = document.getElementById('reset-notice');
+            notice.style.display = 'block';
+            setTimeout(() => {
+                notice.style.display = 'none';
+            }, 3000);
+            
+            // Update counts
+            const selectedKanji = getSelectedKanji();
+            updateKanjiCounts(selectedKanji);
+            
+            // Kosongkan tampilan
+            const kanjiContainer = document.getElementById('kanji-container');
+            kanjiContainer.innerHTML = '<div class="no-kanji">Silakan pilih bab kanji dan tekan "Tampilkan Kanji"</div>';
+            
+            // Reset statistik
+            updateStats(0, 0, 0);
         }
 
         // Event listeners
         document.addEventListener('DOMContentLoaded', () => {
             createLessonCheckboxes();
             
+            // Menghubungkan tombol dengan fungsi yang sesuai
             document.getElementById('show-kanji').addEventListener('click', displayKanji);
+            document.getElementById('sticky-show-kanji').addEventListener('click', displayKanji);
+            document.getElementById('reset-kanji').addEventListener('click', resetDisplayedKanji);
+            document.getElementById('sticky-reset-kanji').addEventListener('click', resetDisplayedKanji);
+            
+            // Event listener untuk checkbox perubahan
+            document.querySelectorAll('input[name="lesson"]').forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    const selectedCount = document.querySelectorAll('input[name="lesson"]:checked').length;
+                    document.getElementById('selected-lessons-count').textContent = selectedCount;
+                    
+                    // Update kanji counts
+                    const selectedKanji = getSelectedKanji();
+                    updateKanjiCounts(selectedKanji);
+                });
+            });
             
             // Select some lessons by default for better UX
             document.querySelectorAll('input[name="lesson"]')[0].checked = true;
             document.querySelectorAll('input[name="lesson"]')[1].checked = true;
-            document.getElementById('selected-lessons-count').textContent = 2;
+            const selectedCount = document.querySelectorAll('input[name="lesson"]:checked').length;
+            document.getElementById('selected-lessons-count').textContent = selectedCount;
+            
+            // Update kanji counts awal
+            const selectedKanji = getSelectedKanji();
+            updateKanjiCounts(selectedKanji);
         });
     </script>
 </body>
