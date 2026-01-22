@@ -884,7 +884,7 @@
                     { kanji: "場所", meaning: "tempat", reading: "ばしょ" },
                     { kanji: "駅", meaning: "stasiun", reading: "えき" },
                     { kanji: "受付", meaning: "resepsionis", reading: "うけつけ" },
-                    { kanji: "门", meaning: "gerbang", reading: "もん" },
+                    { kanji: "門", meaning: "gerbang", reading: "もん" },
                     { kanji: "電車", meaning: "kereta listrik", reading: "でんしゃ" },
                     { kanji: "待つ", meaning: "menunggu", reading: "まつ" },
                     { kanji: "止まる", meaning: "berhenti", reading: "とまる" },
