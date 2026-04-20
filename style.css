@@ -1,0 +1,437 @@
+/* style.css - Gabungan style utama + mode flashcard grid */
+:root {
+  --primary: #2c3e50;
+  --accent: #e74c3c;
+  --light-bg: #f8f9fa;
+  --card-bg: #ffffff;
+  --border: #dee2e6;
+  --text: #212529;
+  --shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', 'Noto Sans JP', sans-serif;
+  background: var(--light-bg);
+  color: var(--text);
+  line-height: 1.6;
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+header, footer {
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+h1 {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Controls utama */
+.controls {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.select-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+}
+
+.select-group label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: var(--primary);
+}
+
+select, button {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+select:disabled {
+  background: #e9ecef;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+  border: none;
+  font-weight: bold;
+  padding: 0.7rem 1.8rem;
+}
+
+.btn-primary:hover {
+  background: #c0392b;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(231,76,60,0.2);
+}
+
+/* Area latihan */
+.practice-area {
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  min-height: 400px;
+}
+
+.placeholder {
+  text-align: center;
+  color: #6c757d;
+  font-size: 1.2rem;
+  padding: 4rem 0;
+}
+
+/* ========== FLASHCARD BIASA ========== */
+.flashcard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.flashcard {
+  width: 100%;
+  max-width: 500px;
+  height: 280px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.flashcard.flipped .flashcard-inner {
+  transform: rotateY(180deg);
+}
+
+.flashcard-front, .flashcard-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid var(--border);
+}
+
+.flashcard-back {
+  transform: rotateY(180deg);
+  background: #f1f9ff;
+}
+
+.kanji-large {
+  font-size: 7rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.meaning, .reading {
+  font-size: 2rem;
+  margin: 0.5rem 0;
+}
+
+.reading {
+  color: var(--accent);
+}
+
+/* ========== MODE GRID FLASHCARD (dari deepseek) ========== */
+.flashcard-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1.5rem;
+  background: #f1f3f5;
+  padding: 1rem;
+  border-radius: 12px;
+}
+
+.stat-box {
+  text-align: center;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.stat-number {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--primary);
+}
+
+.flashcard-grid-controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.btn-secondary, .btn-warning {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-warning {
+  background: #ffc107;
+  color: #212529;
+}
+
+.flashcard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.grid-card {
+  aspect-ratio: 1/1;
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.grid-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.4s;
+  transform-style: preserve-3d;
+}
+
+.grid-card.flipped .grid-card-inner {
+  transform: rotateY(180deg);
+}
+
+.grid-card-front, .grid-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  background: white;
+  border: 1px solid var(--border);
+}
+
+.grid-card-back {
+  transform: rotateY(180deg);
+  background: #e3f2fd;
+}
+
+.kanji-display {
+  font-size: 2.5rem;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+}
+
+.grid-card.multi-char .kanji-display {
+  font-size: 1.8rem;
+}
+
+.grid-card.many-char .kanji-display {
+  font-size: 1.4rem;
+}
+
+.reading-display {
+  font-size: 1rem;
+  color: var(--accent);
+  margin: 0.3rem 0;
+}
+
+.meaning-display {
+  font-size: 0.9rem;
+  color: #495057;
+  word-break: break-word;
+}
+
+.flashcard-grid-empty {
+  text-align: center;
+  padding: 3rem;
+}
+
+.flashcard-grid-empty p {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ========== MULTIPLE CHOICE & WRITING ========== */
+.question-box {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.question {
+  font-size: 3rem;
+  background: #f1f3f5;
+  padding: 1.5rem;
+  border-radius: 16px;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.option-btn {
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  font-size: 1.2rem;
+  transition: all 0.1s;
+}
+
+.option-btn:hover {
+  background: #e9ecef;
+}
+
+.option-btn.correct {
+  background: #d4edda;
+  border-color: #28a745;
+}
+
+.option-btn.wrong {
+  background: #f8d7da;
+  border-color: #dc3545;
+}
+
+.writing-input-area {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+#writing-input {
+  font-size: 2rem;
+  width: 150px;
+  text-align: center;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 0.5rem;
+}
+
+.feedback {
+  font-size: 1.2rem;
+  min-height: 2rem;
+  margin: 1rem 0;
+}
+
+/* ========== MATCHING GAME ========== */
+.matching-pairs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.kanji-column, .meaning-column {
+  flex: 1 1 200px;
+}
+
+.matching-item {
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 0.8rem;
+  margin: 0.5rem 0;
+  cursor: pointer;
+  text-align: center;
+  transition: 0.1s;
+  font-size: 1.4rem;
+}
+
+.matching-item.selected {
+  background: #cfe2ff;
+  border-color: #0d6efd;
+}
+
+.matching-item.matched {
+  opacity: 0.6;
+  pointer-events: none;
+  background: #e2e3e5;
+}
+
+/* ========== NAVIGASI ========== */
+.nav-controls {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 600px) {
+  .flashcard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .kanji-display {
+    font-size: 2rem;
+  }
+  .flashcard {
+    height: 220px;
+  }
+  .kanji-large {
+    font-size: 4rem;
+  }
+  .meaning, .reading {
+    font-size: 1.4rem;
+  }
+}
