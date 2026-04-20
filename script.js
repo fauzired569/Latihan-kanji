@@ -15,6 +15,7 @@ const lessonSelect = document.getElementById('lesson-select');
 const modeSelect = document.getElementById('mode-select');
 const startBtn = document.getElementById('start-btn');
 const practiceArea = document.getElementById('practice-area');
+const cardCountInput = document.getElementById('card-count');
 
 // ---------- INISIALISASI DROPDOWN ----------
 function initBookSelect() {
@@ -124,11 +125,19 @@ function startPractice() {
   currentLesson = lesson;
   currentMode = modeSelect.value;
 
-  // Ambil item sesuai pilihan
-  currentItems = getItemsBySelection(book, lesson);
+  // Ambil semua item sesuai pilihan
+  let allItems = getItemsBySelection(book, lesson);
 
   // Acak urutan (direkomendasikan untuk campuran)
-  currentItems = shuffleArray(currentItems);
+  allItems = shuffleArray(allItems);
+
+  // Ambil nilai jumlah kartu dari input
+  let desiredCount = parseInt(cardCountInput.value, 10);
+  if (isNaN(desiredCount) || desiredCount < 1) desiredCount = 20;
+  const maxItems = Math.min(desiredCount, allItems.length);
+
+  // Potong array sesuai jumlah yang diinginkan
+  currentItems = allItems.slice(0, maxItems);
 
   currentIndex = 0;
   score = 0;
@@ -168,13 +177,17 @@ function renderPractice() {
 function renderFlashcard() {
   const container = practiceArea;
   
-  // Ambil semua kanji dari pilihan saat ini (sudah diacak di startPractice)
+  // Ambil semua kanji dari pilihan saat ini (sudah diacak dan dibatasi di startPractice)
   const allItems = currentItems;
   
   // Filter yang belum pernah muncul
   const availableItems = allItems.filter(item => 
     !displayedKanjiHistory.includes(item.kanji)
   );
+  
+  // Ambil nilai jumlah kartu dari input
+  let desiredCount = parseInt(cardCountInput.value, 10);
+  if (isNaN(desiredCount) || desiredCount < 1) desiredCount = 20;
   
   // Jika tidak ada yang tersedia, tampilkan pesan dan tombol reset
   if (availableItems.length === 0) {
@@ -189,13 +202,16 @@ function renderFlashcard() {
       // Setelah reset, render ulang
       currentItems = getItemsBySelection(currentBook, currentLesson);
       currentItems = shuffleArray(currentItems);
+      // Batasi lagi dengan input jumlah kartu
+      const maxTotal = Math.min(desiredCount, currentItems.length);
+      currentItems = currentItems.slice(0, maxTotal);
       renderFlashcard();
     });
     return;
   }
   
-  // Tentukan jumlah kartu yang akan ditampilkan (maksimal 20)
-  const maxCards = Math.min(20, availableItems.length);
+  // Tentukan jumlah kartu yang akan ditampilkan (maksimal sesuai input)
+  const maxCards = Math.min(desiredCount, availableItems.length);
   
   // Ambil sejumlah kartu secara acak dari yang tersedia
   const shuffled = shuffleArray([...availableItems]);
