@@ -7,7 +7,7 @@
 
 **Kanji Master** adalah aplikasi web interaktif untuk membantu siswa bahasa Jepang menghafal kanji melalui berbagai mode latihan yang menyenangkan. Data kanji diambil dari buku ajar *Buku Dasar*, *A2-1*, dan *A2-2* dan disajikan dalam antarmuka yang bersih dan responsif.
 
-🌐 **Demo Langsung**: [https://username.github.io/kanji-practice](https://username.github.io/kanji-practice) *(ganti dengan link Anda)*
+🌐 **Demo Langsung**: [https://fauzired569.github.io/Latihan-kanji/]
 
 ---
 
