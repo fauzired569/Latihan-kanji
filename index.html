@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kanji Master · Latihan Interaktif</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>📚 Kanji Master</h1>
+    <p>Pilih buku dan pelajaran, lalu pilih mode latihan.</p>
+  </header>
+
+  <main>
+    <!-- Panel Kontrol -->
+    <section class="controls">
+      <div class="select-group">
+        <label for="book-select">📖 Buku:</label>
+        <select id="book-select"></select>
+      </div>
+      <div class="select-group">
+        <label for="lesson-select">📌 Pelajaran:</label>
+        <select id="lesson-select" disabled></select>
+      </div>
+      <div class="select-group">
+        <label for="mode-select">🎮 Mode Latihan:</label>
+        <select id="mode-select">
+          <option value="flashcard">🗂️ Flashcard</option>
+          <option value="multiple-meaning">❓ Pilihan Ganda (Arti)</option>
+          <option value="multiple-reading">🔊 Pilihan Ganda (Bacaan)</option>
+          <option value="writing">✍️ Latihan Menulis</option>
+          <option value="matching">🃏 Mencocokkan</option>
+        </select>
+      </div>
+      <button id="start-btn" class="btn-primary">Mulai Latihan</button>
+    </section>
+
+    <!-- Area Latihan Dinamis -->
+    <section id="practice-area" class="practice-area">
+      <div class="placeholder">👆 Pilih pelajaran dan mode, lalu klik "Mulai Latihan"</div>
+    </section>
+  </main>
+
+  <footer>
+    <p>🇯🇵 Selamat belajar! · Data berdasarkan buku ajar</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
