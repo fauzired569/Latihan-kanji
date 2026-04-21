@@ -6,8 +6,8 @@ let currentItems = [];
 let currentIndex = 0;
 let score = 0;
 
-// Histori kanji yang sudah pernah ditampilkan di mode flashcard
-let displayedKanjiHistory = JSON.parse(localStorage.getItem('kanjiMasterDisplayed')) || [];
+// Untuk matching: menyimpan pasangan yang sudah pernah digunakan dalam sesi
+let usedMatchingItems = [];
 
 // DOM Elements
 const bookSelect = document.getElementById('book-select');
@@ -21,7 +21,6 @@ const cardCountInput = document.getElementById('card-count');
 function initBookSelect() {
   const books = Object.keys(kanjiData);
 
-  // Tambahkan opsi "Semua Buku" di awal
   const allBooksOption = document.createElement('option');
   allBooksOption.value = 'all';
   allBooksOption.textContent = '📚 Semua Buku';
@@ -43,10 +42,8 @@ function initBookSelect() {
 function updateLessonSelect(book) {
   lessonSelect.innerHTML = '<option value="">-- Pilih Pelajaran --</option>';
 
-  // Jika "Semua Buku" dipilih, tampilkan pesan khusus atau langsung set pelajaran "all"
   if (book === 'all') {
     lessonSelect.disabled = true;
-    // Buat opsi default saja
     const option = document.createElement('option');
     option.value = 'all';
     option.textContent = '📖 Semua Pelajaran (otomatis)';
@@ -56,7 +53,6 @@ function updateLessonSelect(book) {
   }
 
   lessonSelect.disabled = false;
-
   const lessons = Object.keys(kanjiData[book]);
   lessons.forEach(lesson => {
     const option = document.createElement('option');
@@ -65,7 +61,6 @@ function updateLessonSelect(book) {
     lessonSelect.appendChild(option);
   });
 
-  // Tambahkan opsi "Semua Pelajaran" di akhir
   const allLessonsOption = document.createElement('option');
   allLessonsOption.value = 'all';
   allLessonsOption.textContent = '📖 Semua Pelajaran (dalam buku ini)';
@@ -80,29 +75,22 @@ bookSelect.addEventListener('change', (e) => {
   updateLessonSelect(e.target.value);
 });
 
-// ---------- FUNGSI PENGAMBILAN ITEM BERDASARKAN PILIHAN ----------
+// ---------- FUNGSI PENGAMBILAN ITEM ----------
 function getItemsBySelection(book, lesson) {
   let items = [];
-
-  // Kasus 1: Semua Buku
   if (book === 'all') {
     for (let b in kanjiData) {
       for (let l in kanjiData[b]) {
         items = items.concat(kanjiData[b][l]);
       }
     }
-  }
-  // Kasus 2: Buku tertentu, semua pelajaran
-  else if (lesson === 'all') {
+  } else if (lesson === 'all') {
     for (let l in kanjiData[book]) {
       items = items.concat(kanjiData[book][l]);
     }
-  }
-  // Kasus 3: Buku dan pelajaran spesifik
-  else {
+  } else {
     items = kanjiData[book][lesson] || [];
   }
-
   return items;
 }
 
@@ -115,42 +103,29 @@ function startPractice() {
     alert('Silakan pilih buku dan pelajaran.');
     return;
   }
-
-  // Jika buku "all", otomatis lesson dianggap "all"
-  if (book === 'all') {
-    lesson = 'all';
-  }
+  if (book === 'all') lesson = 'all';
 
   currentBook = book;
   currentLesson = lesson;
   currentMode = modeSelect.value;
 
-  // Ambil semua item sesuai pilihan
   let allItems = getItemsBySelection(book, lesson);
-
-  // Acak urutan (direkomendasikan untuk campuran)
   allItems = shuffleArray(allItems);
-
-  // Ambil nilai jumlah kartu dari input
   let desiredCount = parseInt(cardCountInput.value, 10);
   if (isNaN(desiredCount) || desiredCount < 1) desiredCount = 20;
   const maxItems = Math.min(desiredCount, allItems.length);
-
-  // Potong array sesuai jumlah yang diinginkan
   currentItems = allItems.slice(0, maxItems);
-
   currentIndex = 0;
   score = 0;
+  usedMatchingItems = []; // reset histori matching
 
   if (currentItems.length === 0) {
     practiceArea.innerHTML = '<div class="placeholder">❌ Tidak ada kanji yang ditemukan.</div>';
     return;
   }
-
   renderPractice();
 }
 
-// ---------- RENDER BERDASARKAN MODE ----------
 function renderPractice() {
   switch (currentMode) {
     case 'flashcard':
@@ -163,7 +138,7 @@ function renderPractice() {
       renderMultipleChoice('reading');
       break;
     case 'writing':
-      renderWriting();
+      renderFindKanji();
       break;
     case 'matching':
       renderMatching();
@@ -173,83 +148,20 @@ function renderPractice() {
   }
 }
 
-// ---------- FLASHCARD MODE (GRID + HISTORI) ----------
+// ================= FLASHCARD (tanpa histori) =================
 function renderFlashcard() {
-  const container = practiceArea;
-  
-  // Ambil semua kanji dari pilihan saat ini (sudah diacak dan dibatasi di startPractice)
-  const allItems = currentItems;
-  
-  // Filter yang belum pernah muncul
-  const availableItems = allItems.filter(item => 
-    !displayedKanjiHistory.includes(item.kanji)
-  );
-  
-  // Ambil nilai jumlah kartu dari input
-  let desiredCount = parseInt(cardCountInput.value, 10);
-  if (isNaN(desiredCount) || desiredCount < 1) desiredCount = 20;
-  
-  // Jika tidak ada yang tersedia, tampilkan pesan dan tombol reset
-  if (availableItems.length === 0) {
-    container.innerHTML = `
-      <div class="flashcard-grid-empty">
-        <p>🎉 Semua kanji dari pilihan ini sudah pernah ditampilkan!</p>
-        <button id="reset-history-btn" class="btn-primary">Reset Histori & Tampilkan Ulang</button>
-      </div>
-    `;
-    document.getElementById('reset-history-btn').addEventListener('click', () => {
-      resetDisplayedHistory();
-      // Setelah reset, render ulang
-      currentItems = getItemsBySelection(currentBook, currentLesson);
-      currentItems = shuffleArray(currentItems);
-      // Batasi lagi dengan input jumlah kartu
-      const maxTotal = Math.min(desiredCount, currentItems.length);
-      currentItems = currentItems.slice(0, maxTotal);
-      renderFlashcard();
-    });
+  let itemsToShow = currentItems; // sudah dipotong dan diacak di startPractice
+  if (itemsToShow.length === 0) {
+    practiceArea.innerHTML = '<div class="placeholder">Tidak ada kanji.</div>';
     return;
   }
-  
-  // Tentukan jumlah kartu yang akan ditampilkan (maksimal sesuai input)
-  const maxCards = Math.min(desiredCount, availableItems.length);
-  
-  // Ambil sejumlah kartu secara acak dari yang tersedia
-  const shuffled = shuffleArray([...availableItems]);
-  const itemsToShow = shuffled.slice(0, maxCards);
-  
-  // Tambahkan ke histori
-  itemsToShow.forEach(item => {
-    if (!displayedKanjiHistory.includes(item.kanji)) {
-      displayedKanjiHistory.push(item.kanji);
-    }
-  });
-  localStorage.setItem('kanjiMasterDisplayed', JSON.stringify(displayedKanjiHistory));
-  
-  // Bangun HTML grid
+
   let html = `
-    <div class="flashcard-stats">
-      <div class="stat-box">
-        <span class="stat-label">Total Kanji Tersedia</span>
-        <span class="stat-number">${allItems.length}</span>
-      </div>
-      <div class="stat-box">
-        <span class="stat-label">Sudah Muncul</span>
-        <span class="stat-number">${displayedKanjiHistory.length}</span>
-      </div>
-      <div class="stat-box">
-        <span class="stat-label">Belum Muncul</span>
-        <span class="stat-number">${allItems.length - displayedKanjiHistory.length}</span>
-      </div>
-    </div>
-    
-    <div class="flashcard-grid-controls">
+    <div class="flashcard-grid-controls" style="margin-bottom:1rem;">
       <button id="refresh-grid-btn" class="btn-secondary">🔄 Acak & Tampilkan Baru</button>
-      <button id="reset-history-grid-btn" class="btn-warning">🗑️ Reset Histori</button>
     </div>
-    
     <div class="flashcard-grid" id="flashcard-grid">
   `;
-  
   itemsToShow.forEach(item => {
     const charClass = item.kanji.length >= 4 ? 'many-char' : (item.kanji.length === 3 ? 'multi-char' : '');
     html += `
@@ -267,53 +179,53 @@ function renderFlashcard() {
       </div>
     `;
   });
-  
   html += `</div>`;
-  container.innerHTML = html;
-  
-  // Tambahkan event listener ke setiap kartu
+  practiceArea.innerHTML = html;
+
   const cards = document.querySelectorAll('.grid-card');
   cards.forEach(card => {
-    card.addEventListener('click', function(e) {
-      // Tutup kartu lain yang terbuka
+    card.addEventListener('click', function() {
       cards.forEach(c => {
-        if (c !== this && c.classList.contains('flipped')) {
-          c.classList.remove('flipped');
-        }
+        if (c !== this && c.classList.contains('flipped')) c.classList.remove('flipped');
       });
-      // Flip kartu ini
       this.classList.toggle('flipped');
     });
   });
-  
-  // Event untuk tombol refresh (tampilkan set baru)
+
   document.getElementById('refresh-grid-btn').addEventListener('click', () => {
-    renderFlashcard();
-  });
-  
-  document.getElementById('reset-history-grid-btn').addEventListener('click', () => {
-    resetDisplayedHistory();
+    // Ambil ulang dari pool yang sama, acak, potong sesuai jumlah
+    let allItems = getItemsBySelection(currentBook, currentLesson);
+    allItems = shuffleArray(allItems);
+    let desiredCount = parseInt(cardCountInput.value, 10);
+    if (isNaN(desiredCount) || desiredCount < 1) desiredCount = 20;
+    currentItems = allItems.slice(0, Math.min(desiredCount, allItems.length));
     renderFlashcard();
   });
 }
 
-function resetDisplayedHistory() {
-  displayedKanjiHistory = [];
-  localStorage.removeItem('kanjiMasterDisplayed');
-}
-
-// ---------- MULTIPLE CHOICE ----------
+// ================= MULTIPLE CHOICE (Arti / Bacaan) =================
 function renderMultipleChoice(type) {
   if (currentIndex >= currentItems.length) {
-    practiceArea.innerHTML = `<div class="placeholder">🎉 Latihan selesai! Skor: ${score}/${currentItems.length}</div>`;
+    practiceArea.innerHTML = `
+      <div class="placeholder">🎉 Latihan selesai! Skor: ${score}/${currentItems.length}</div>
+      <div style="text-align:center; margin-top:1rem;">
+        <button id="repeat-session-btn" class="btn-primary">🔄 Ulangi Latihan</button>
+      </div>
+    `;
+    const repeatBtn = document.getElementById('repeat-session-btn');
+    if (repeatBtn) repeatBtn.addEventListener('click', () => {
+      // Acak ulang urutan currentItems
+      currentItems = shuffleArray(currentItems);
+      currentIndex = 0;
+      score = 0;
+      renderMultipleChoice(type);
+    });
     return;
   }
 
   const item = currentItems[currentIndex];
   const correctAnswer = type === 'meaning' ? item.meaning : item.reading;
   let options = [correctAnswer];
-
-  // Ambil jawaban salah dari item lain
   while (options.length < 4) {
     const randomItem = currentItems[Math.floor(Math.random() * currentItems.length)];
     const distractor = type === 'meaning' ? randomItem.meaning : randomItem.reading;
@@ -334,17 +246,14 @@ function renderMultipleChoice(type) {
     </div>
     <div class="options-grid" id="options-container">
   `;
-
   options.forEach(opt => {
     html += `<button class="option-btn" data-value="${opt}">${opt}</button>`;
   });
-
   html += `</div>
     <div class="nav-controls">
       <button id="next-question-btn" disabled>Lanjut ▶</button>
     </div>
   `;
-
   practiceArea.innerHTML = html;
 
   const optionBtns = document.querySelectorAll('.option-btn');
@@ -361,7 +270,6 @@ function renderMultipleChoice(type) {
         score++;
       } else {
         e.target.classList.add('wrong');
-        // Tunjukkan jawaban benar
         optionBtns.forEach(b => {
           if (b.dataset.value === correctAnswer) b.classList.add('correct');
         });
@@ -376,71 +284,113 @@ function renderMultipleChoice(type) {
   });
 }
 
-// ---------- WRITING ----------
-function renderWriting() {
+// ================= TEMUKAN KANJI (pengganti writing) =================
+function renderFindKanji() {
   if (currentIndex >= currentItems.length) {
-    practiceArea.innerHTML = `<div class="placeholder">🎉 Latihan selesai! Skor: ${score}/${currentItems.length}</div>`;
+    practiceArea.innerHTML = `
+      <div class="placeholder">🎉 Latihan selesai! Skor: ${score}/${currentItems.length}</div>
+      <div style="text-align:center; margin-top:1rem;">
+        <button id="repeat-session-btn" class="btn-primary">🔄 Ulangi Latihan</button>
+      </div>
+    `;
+    const repeatBtn = document.getElementById('repeat-session-btn');
+    if (repeatBtn) repeatBtn.addEventListener('click', () => {
+      currentItems = shuffleArray(currentItems);
+      currentIndex = 0;
+      score = 0;
+      renderFindKanji();
+    });
     return;
   }
 
   const item = currentItems[currentIndex];
-  const html = `
+  const correctKanji = item.kanji;
+  let options = [correctKanji];
+  // ambil 3 kanji berbeda dari item lain
+  const otherItems = currentItems.filter(i => i.kanji !== correctKanji);
+  const shuffledOthers = shuffleArray([...otherItems]);
+  for (let i = 0; i < 3 && i < shuffledOthers.length; i++) {
+    if (!options.includes(shuffledOthers[i].kanji)) {
+      options.push(shuffledOthers[i].kanji);
+    }
+  }
+  // jika kurang (misal total item sedikit), tambahkan duplikat (tidak ideal tapi aman)
+  while (options.length < 4) options.push(correctKanji);
+  options = shuffleArray(options);
+
+  let html = `
     <div class="question-box">
-      <div class="question">Arti: ${item.meaning}</div>
+      <div class="question" style="background:none; font-size:1.5rem;">Arti: ${item.meaning}</div>
       <p>Bacaan: ${item.reading}</p>
-      <p><strong>Tulis kanji yang tepat:</strong></p>
+      <p><strong>Pilih kanji yang tepat:</strong></p>
     </div>
-    <div class="writing-input-area">
-      <input type="text" id="writing-input" placeholder="漢字" autocomplete="off">
-      <button id="check-writing-btn" class="btn-primary">Periksa</button>
-    </div>
-    <div class="feedback" id="writing-feedback"></div>
+    <div class="options-grid" id="options-container">
+  `;
+  options.forEach(kanji => {
+    html += `<button class="option-btn" data-value="${kanji}">${kanji}</button>`;
+  });
+  html += `</div>
     <div class="nav-controls">
-      <button id="next-writing-btn" disabled>Lanjut ▶</button>
+      <button id="next-question-btn" disabled>Lanjut ▶</button>
     </div>
   `;
   practiceArea.innerHTML = html;
 
-  const input = document.getElementById('writing-input');
-  const checkBtn = document.getElementById('check-writing-btn');
-  const feedback = document.getElementById('writing-feedback');
-  const nextBtn = document.getElementById('next-writing-btn');
+  const optionBtns = document.querySelectorAll('.option-btn');
+  const nextBtn = document.getElementById('next-question-btn');
   let answered = false;
 
-  checkBtn.addEventListener('click', () => {
-    if (answered) return;
-    const answer = input.value.trim();
-    if (answer === item.kanji) {
-      feedback.textContent = '✅ Benar!';
-      feedback.style.color = 'green';
-      score++;
+  optionBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      if (answered) return;
       answered = true;
+      const selected = e.target.dataset.value;
+      if (selected === correctKanji) {
+        e.target.classList.add('correct');
+        score++;
+      } else {
+        e.target.classList.add('wrong');
+        optionBtns.forEach(b => {
+          if (b.dataset.value === correctKanji) b.classList.add('correct');
+        });
+      }
       nextBtn.disabled = false;
-    } else {
-      feedback.textContent = `❌ Salah. Jawaban: ${item.kanji}`;
-      feedback.style.color = 'red';
-      answered = true;
-      nextBtn.disabled = false;
-    }
-  });
-
-  input.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter' && !answered) {
-      checkBtn.click();
-    }
+    });
   });
 
   nextBtn.addEventListener('click', () => {
     currentIndex++;
-    renderWriting();
+    renderFindKanji();
   });
 }
 
-// ---------- MATCHING ----------
+// ================= MENCOCOKKAN (dengan histori) =================
 function renderMatching() {
-  const items = currentItems.slice(0, 8); // maks 8 pasang
-  const kanjis = shuffleArray([...items]);
-  const meanings = shuffleArray([...items]);
+  // Ambil item yang belum pernah digunakan di sesi matching ini
+  let availablePool = currentItems.filter(item => !usedMatchingItems.includes(item.kanji));
+  if (availablePool.length === 0) {
+    practiceArea.innerHTML = `
+      <div class="placeholder">🎉 Semua kanji sudah pernah digunakan dalam permainan mencocokkan!</div>
+      <div style="text-align:center; margin-top:1rem;">
+        <button id="reset-matching-full" class="btn-primary">Reset Histori & Mulai Baru</button>
+      </div>
+    `;
+    const resetBtn = document.getElementById('reset-matching-full');
+    if (resetBtn) resetBtn.addEventListener('click', () => {
+      usedMatchingItems = [];
+      renderMatching();
+    });
+    return;
+  }
+
+  // Ambil maksimal 8 pasang dari pool yang tersedia
+  const maxPairs = Math.min(8, availablePool.length);
+  const selectedItems = shuffleArray([...availablePool]).slice(0, maxPairs);
+  // Tandai sebagai sudah digunakan
+  selectedItems.forEach(item => usedMatchingItems.push(item.kanji));
+
+  const kanjis = shuffleArray([...selectedItems]);
+  const meanings = shuffleArray([...selectedItems]);
 
   let html = `
     <div class="matching-pairs">
@@ -448,17 +398,18 @@ function renderMatching() {
         <h3>Kanji</h3>
         <div id="kanji-list">
   `;
-  kanjis.forEach((item, idx) => {
+  kanjis.forEach(item => {
     html += `<div class="matching-item" data-type="kanji" data-id="${item.kanji}" data-pair="${item.meaning}">${item.kanji}</div>`;
   });
   html += `</div></div><div class="meaning-column"><h3>Arti</h3><div id="meaning-list">`;
-  meanings.forEach((item, idx) => {
+  meanings.forEach(item => {
     html += `<div class="matching-item" data-type="meaning" data-id="${item.meaning}" data-pair="${item.kanji}">${item.meaning}</div>`;
   });
   html += `</div></div></div>
     <div class="nav-controls">
-      <button id="reset-matching-btn">🔄 Acak Ulang</button>
-      <span id="match-score">Pasangan: 0/${items.length}</span>
+      <button id="shuffle-matching-btn">🔄 Acak Ulang (Pasangan Baru)</button>
+      <button id="reset-matching-hist-btn">🗑️ Reset Histori</button>
+      <span id="match-score">Pasangan: 0/${selectedItems.length}</span>
     </div>
   `;
 
@@ -467,58 +418,68 @@ function renderMatching() {
   let selectedKanji = null;
   let matchedCount = 0;
   const matchScoreSpan = document.getElementById('match-score');
-
-  const allItems = document.querySelectorAll('.matching-item');
-  const resetBtn = document.getElementById('reset-matching-btn');
+  const totalPairs = selectedItems.length;
 
   function updateMatchScore() {
-    matchScoreSpan.textContent = `Pasangan: ${matchedCount}/${items.length}`;
-    if (matchedCount === items.length) {
+    matchScoreSpan.textContent = `Pasangan: ${matchedCount}/${totalPairs}`;
+    if (matchedCount === totalPairs) {
       setTimeout(() => alert('🎉 Selamat! Semua pasangan cocok!'), 100);
     }
   }
 
-  allItems.forEach(el => {
-    el.addEventListener('click', (e) => {
-      if (el.classList.contains('matched')) return;
-
-      if (el.dataset.type === 'kanji') {
-        document.querySelectorAll('[data-type="kanji"]').forEach(k => k.classList.remove('selected'));
-        el.classList.add('selected');
-        selectedKanji = el;
-      } else {
-        if (!selectedKanji) {
-          alert('Pilih kanji dulu!');
-          return;
-        }
-
-        const kanjiEl = selectedKanji;
-        const meaningEl = el;
-
-        if (kanjiEl.dataset.pair === meaningEl.dataset.id) {
-          kanjiEl.classList.add('matched');
-          meaningEl.classList.add('matched');
-          kanjiEl.classList.remove('selected');
-          matchedCount++;
-          updateMatchScore();
-          selectedKanji = null;
-        } else {
-          alert('Pasangan tidak cocok!');
-          kanjiEl.classList.remove('selected');
-          selectedKanji = null;
-        }
-      }
+  const attachEvents = () => {
+    const allItemsEl = document.querySelectorAll('.matching-item');
+    allItemsEl.forEach(el => {
+      el.removeEventListener('click', clickHandler);
+      el.addEventListener('click', clickHandler);
     });
+  };
+
+  function clickHandler(e) {
+    const el = e.currentTarget;
+    if (el.classList.contains('matched')) return;
+
+    if (el.dataset.type === 'kanji') {
+      document.querySelectorAll('[data-type="kanji"]').forEach(k => k.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedKanji = el;
+    } else {
+      if (!selectedKanji) {
+        alert('Pilih kanji dulu!');
+        return;
+      }
+      const kanjiEl = selectedKanji;
+      const meaningEl = el;
+      if (kanjiEl.dataset.pair === meaningEl.dataset.id) {
+        kanjiEl.classList.add('matched');
+        meaningEl.classList.add('matched');
+        kanjiEl.classList.remove('selected');
+        matchedCount++;
+        updateMatchScore();
+        selectedKanji = null;
+      } else {
+        alert('Pasangan tidak cocok!');
+        kanjiEl.classList.remove('selected');
+        selectedKanji = null;
+      }
+    }
+  }
+
+  attachEvents();
+
+  document.getElementById('shuffle-matching-btn').addEventListener('click', () => {
+    renderMatching(); // ambil pasangan baru dari pool (histori tetap, jadi tidak akan mengulang yang sudah pernah)
   });
 
-  resetBtn.addEventListener('click', () => {
+  document.getElementById('reset-matching-hist-btn').addEventListener('click', () => {
+    usedMatchingItems = [];
     renderMatching();
   });
 
   updateMatchScore();
 }
 
-// ---------- UTILITY ----------
+// ================= UTILITY =================
 function shuffleArray(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -527,8 +488,6 @@ function shuffleArray(arr) {
   return arr;
 }
 
-// ---------- EVENT LISTENERS ----------
+// ================= EVENT LISTENER =================
 startBtn.addEventListener('click', startPractice);
-
-// Inisialisasi awal
 initBookSelect();
