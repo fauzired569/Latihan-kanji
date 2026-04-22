@@ -1,4 +1,10 @@
 // script.js
+// === Penanganan error: pastikan data kanji termuat ===
+if (typeof kanjiData === 'undefined') {
+  alert('Gagal memuat data kanji. Periksa koneksi atau muat ulang halaman.');
+  throw new Error('kanjiData tidak ditemukan');
+}
+
 let currentBook = '';
 let currentSelectedLessons = []; // array nama bab yang dipilih
 let currentMode = '';
