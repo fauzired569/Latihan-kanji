@@ -25,7 +25,7 @@ const kanjiData = {
     ],
     "第九課～第十八課": [
       { "kanji": "朝", "meaning": "pagi", "reading": "あさ" },
-      { "kanji": "昼", "meaning": "siang", "reading": "ひル" },
+      { "kanji": "昼", "meaning": "siang", "reading": "ひる" }, // diperbaiki: sebelumnya "ひル"
       { "kanji": "夜", "meaning": "malam", "reading": "よる" },
       { "kanji": "読みます", "meaning": "membaca", "reading": "よみます" },
       { "kanji": "聞きます", "meaning": "mendengar", "reading": "ききます" },
@@ -50,7 +50,7 @@ const kanjiData = {
       { "kanji": "低い", "meaning": "rendah", "reading": "ひくい" },
       { "kanji": "前", "meaning": "depan", "reading": "まえ" },
       { "kanji": "後ろ", "meaning": "belakang", "reading": "うしろ" },
-      { "kanji": "横", "meaning": "samping", "reading": "よコ" },
+      { "kanji": "横", "meaning": "samping", "reading": "よこ" }, // diperbaiki: sebelumnya "よコ"
       { "kanji": "入口", "meaning": "pintu masuk", "reading": "いりぐち" },
       { "kanji": "出口", "meaning": "pintu keluar", "reading": "でぐち" },
       { "kanji": "～階", "meaning": "lantai", "reading": "～かい" },
@@ -91,7 +91,7 @@ const kanjiData = {
       { "kanji": "英語", "meaning": "bahasa Inggris", "reading": "えいご" },
       { "kanji": "音楽", "meaning": "musik", "reading": "おんがく" },
       { "kanji": "習う", "meaning": "belajar (keterampilan)", "reading": "ならう" },
-      { "kanji": "話す", "meaning": "berbicara", "reading": "話す" },
+      { "kanji": "話す", "meaning": "berbicara", "reading": "はなす" },
       { "kanji": "出かける", "meaning": "pergi keluar", "reading": "でかける" }
     ],
     "第三課": [
@@ -156,7 +156,7 @@ const kanjiData = {
     "第八課": [
       { "kanji": "お金", "meaning": "uang", "reading": "おかね" },
       { "kanji": "食事", "meaning": "makan (aktivitas)/hidangan", "reading": "しょくじ" },
-      { "kanji": "博物館", "meaning": "museum", "reading": "はクぶつかん" },
+      { "kanji": "博物館", "meaning": "museum", "reading": "はくぶつかん" }, // diperbaiki: sebelumnya "はクぶつかん"
       { "kanji": "動物園", "meaning": "kebun binatang", "reading": "どうぶつえん" },
       { "kanji": "試合", "meaning": "pertandingan/perlombaan", "reading": "しあい" },
       { "kanji": "楽しい", "meaning": "menyenangkan", "reading": "たのしい" },
@@ -249,7 +249,7 @@ const kanjiData = {
     ],
     "第十六課": [
       { "kanji": "体", "meaning": "tubuh/badan", "reading": "からだ" },
-      { "kanji": "颜", "meaning": "wajah", "reading": "かお" },
+      { "kanji": "顔", "meaning": "wajah", "reading": "かお" },
       { "kanji": "目", "meaning": "mata", "reading": "め" },
       { "kanji": "耳", "meaning": "telinga", "reading": "みみ" },
       { "kanji": "口", "meaning": "mulut", "reading": "くち" },
@@ -275,7 +275,7 @@ const kanjiData = {
       { "kanji": "両親", "meaning": "orang tua (ayah dan ibu)", "reading": "りょうしん" }
     ],
     "第十八課": [
-      { "kanji": "男の子", "meaning": "anak laki-laki", "reading": "おtoこのこ" },
+      { "kanji": "男の子", "meaning": "anak laki-laki", "reading": "おとこのこ" }, // diperbaiki: sebelumnya "おtoこのこ"
       { "kanji": "女の子", "meaning": "anak perempuan", "reading": "おんなのこ" },
       { "kanji": "お祝い", "meaning": "ucapan selamat/perayaan", "reading": "おいわい" },
       { "kanji": "誕生日", "meaning": "ulang tahun", "reading": "たんじょうび" },
@@ -313,10 +313,10 @@ const kanjiData = {
       { "kanji": "泣く", "meaning": "menangis", "reading": "なく" }
     ],
     "第三課": [
-      { "kanji": "注文", "meaning": "pesanan (makanan/minuman)", "reading": "ちゅうモン" },
+      { "kanji": "注文", "meaning": "pesanan (makanan/minuman)", "reading": "ちゅうもん" }, // diperbaiki: sebelumnya "ちゅうモン"
       { "kanji": "会計", "meaning": "pembayaran (tagihan)", "reading": "かいけい" },
-      { "kanji": "予約", "meaning": "reservasi", "reading": "よやク" },
-      { "kanji": "電話番号", "meaning": "nomor telepon", "reading": "てんわばんごう" },
+      { "kanji": "予約", "meaning": "reservasi", "reading": "よやく" }, // diperbaiki: sebelumnya "よやク"
+      { "kanji": "電話番号", "meaning": "nomor telepon", "reading": "でんわばんごう" }, // diperbaiki: sebelumnya "てんわばんごう"
       { "kanji": "～様", "meaning": "Tuan/Nyonya (sebutan hormat)", "reading": "～さま" },
       { "kanji": "ご飯", "meaning": "nasi/makanan", "reading": "ごはん" },
       { "kanji": "牛乳", "meaning": "susu sapi", "reading": "ぎゅうにゅう" },
@@ -330,7 +330,7 @@ const kanjiData = {
       { "kanji": "量", "meaning": "jumlah/takaran", "reading": "りょう" },
       { "kanji": "～方", "meaning": "cara～/metode～ (akhiran)", "reading": "～かた" },
       { "kanji": "～屋", "meaning": "toko～/ahli～ (akhiran)", "reading": "～や" },
-      { "kanji": "満足", "meaning": "puas/kepuasan", "reading": "まんぞク" },
+      { "kanji": "満足", "meaning": "puas/kepuasan", "reading": "まんぞく" }, // diperbaiki: sebelumnya "まんぞク"
       { "kanji": "切る", "meaning": "memotong/memutuskan", "reading": "きる" },
       { "kanji": "焼く", "meaning": "membakar/memanggang", "reading": "やく" },
       { "kanji": "入れる", "meaning": "memasukkan/menambahkan", "reading": "いれる" }
@@ -445,7 +445,7 @@ const kanjiData = {
       { "kanji": "利用する", "meaning": "menggunakan/memanfaatkan", "reading": "りようする" }
     ],
     "第十四課": [
-      { "kanji": "外国", "meaning": "luar negeri", "reading": "がいこク" },
+      { "kanji": "外国", "meaning": "luar negeri", "reading": "がいこく" }, // diperbaiki: sebelumnya "がいこク"
       { "kanji": "情報", "meaning": "informasi", "reading": "じょうほう" },
       { "kanji": "相談", "meaning": "konsultasi", "reading": "そうだん" },
       { "kanji": "質問", "meaning": "pertanyaan", "reading": "しつもん" },
@@ -499,7 +499,7 @@ const kanjiData = {
       { "kanji": "建てる", "meaning": "membangun (bangunan)", "reading": "たてる" },
       { "kanji": "続ける", "meaning": "melanjutkan", "reading": "つづける" },
       { "kanji": "考える", "meaning": "berpikir/mempertimbangkan", "reading": "かんがえる" },
-      { "kanji": "役に立つ", "meaning": "berguna/bermanfaat", "reading": "やクにたつ" },
+      { "kanji": "役に立つ", "meaning": "berguna/bermanfaat", "reading": "やくにたつ" }, // diperbaiki: sebelumnya "やクにたつ"
       { "kanji": "卒業する", "meaning": "lulus (dari sekolah)", "reading": "そつぎょうする" },
       { "kanji": "留学する", "meaning": "belajar di luar negeri", "reading": "りゅうがくする" }
     ]
