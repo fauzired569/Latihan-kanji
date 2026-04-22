@@ -2,14 +2,14 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   <title>Kanji Master · Latihan Interaktif</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
     <h1>📚 Kanji Master</h1>
-    <p>Pilih buku dan pelajaran, lalu pilih mode latihan.</p>
+    <p>Pilih buku dan bab (bisa lebih dari satu), lalu pilih mode latihan.</p>
   </header>
 
   <main>
@@ -19,26 +19,49 @@
         <label for="book-select">📖 Buku:</label>
         <select id="book-select"></select>
       </div>
-      <div class="select-group">
-        <label for="lesson-select">📌 Pelajaran:</label>
-        <select id="lesson-select" disabled></select>
+
+      <!-- Multi‑select bab dengan checkbox -->
+      <div class="select-group" id="lesson-checkbox-group">
+        <label>📌 Pelajaran:</label>
+        <div id="lesson-checkboxes" class="checkbox-list">
+          <!-- Diisi dinamis lewat JavaScript -->
+        </div>
+        <div class="checkbox-actions">
+          <button type="button" id="select-all-lessons" class="btn-small">✓ Pilih Semua</button>
+          <button type="button" id="deselect-all-lessons" class="btn-small">✗ Bersihkan</button>
+        </div>
       </div>
+
       <div class="select-group">
         <label for="mode-select">🎮 Mode Latihan:</label>
         <select id="mode-select">
-          <option value="flashcard">🗂️ Flashcard</option>
+          <option value="flashcard">🗂️ Flashcard (Grid)</option>
           <option value="multiple-meaning">❓ Pilihan Ganda (Arti)</option>
           <option value="multiple-reading">🔊 Pilihan Ganda (Bacaan)</option>
-          <option value="writing">🎯 Temukan Kanji</option>
+          <option value="writing-kanji">✍️ Tulis Kanji</option>
+          <option value="writing-reading">✍️ Tulis Bacaan (Hiragana)</option>
           <option value="matching">🃏 Mencocokkan</option>
         </select>
       </div>
-      <!-- Kontrol Jumlah Kartu -->
+
       <div class="select-group">
         <label for="card-count">🔢 Jumlah Kartu:</label>
-        <input type="number" id="card-count" min="1" max="100" value="20">
+        <input type="number" id="card-count" min="1" max="200" value="20">
       </div>
+
       <button id="start-btn" class="btn-primary">Mulai Latihan</button>
+    </section>
+
+    <!-- Panel Histori & Kontrol Sesi (muncul setelah latihan dimulai) -->
+    <section id="session-panel" class="session-panel" style="display: none;">
+      <div class="session-info">
+        <span id="histori-count">Kanji sudah dilatih: 0</span>
+      </div>
+      <div class="session-actions">
+        <button id="repeat-session-btn" class="btn-secondary">🔄 Ulangi Sesi (Kanji Sama)</button>
+        <button id="new-session-btn" class="btn-secondary">✨ Latihan Baru (Kanji Belum Dilatih)</button>
+        <button id="reset-history-btn" class="btn-warning">🗑️ Reset Histori</button>
+      </div>
     </section>
 
     <!-- Area Latihan Dinamis -->
