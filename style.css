@@ -74,7 +74,7 @@ select, button {
   transition: all 0.2s;
 }
 
-/* ---------- TAMBAHAN STYLING INPUT NUMBER (DeepSeek 3175f5) ---------- */
+/* ---------- STYLING INPUT NUMBER ---------- */
 input[type="number"] {
   padding: 0.6rem 1rem;
   border: 1px solid var(--border);
@@ -90,7 +90,6 @@ input[type="number"]:focus {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
-/* -------------------------------------------------------------------- */
 
 select:disabled {
   background: #e9ecef;
@@ -127,7 +126,7 @@ select:disabled {
   padding: 4rem 0;
 }
 
-/* ========== PERBAIKAN TOUCH TARGET (DeepSeek 82f770) ========== */
+/* ========== PERBAIKAN TOUCH TARGET ========== */
 button, .matching-item, .option-btn, .grid-card {
   min-height: 44px; /* rekomendasi Apple/Google */
 }
@@ -138,7 +137,7 @@ button, .matching-item, .option-btn, .grid-card {
   justify-content: center;
 }
 
-/* ========== UKURAN FONT CLAMP (DeepSeek 617c3e) ========== */
+/* ========== UKURAN FONT CLAMP ========== */
 .kanji-large {
   font-size: clamp(3.5rem, 15vw, 7rem);
 }
@@ -151,7 +150,7 @@ button, .matching-item, .option-btn, .grid-card {
   font-size: clamp(2rem, 10vw, 3rem);
 }
 
-/* ========== HAPUS EFEK HOVER PADA TOUCH (DeepSeek 6c3b6a) ========== */
+/* ========== HAPUS EFEK HOVER PADA TOUCH ========== */
 @media (hover: none) {
   .option-btn:hover {
     background: white; /* hapus efek hover */
@@ -275,6 +274,10 @@ button, .matching-item, .option-btn, .grid-card {
 .btn-warning {
   background: #ffc107;
   color: #212529;
+}
+
+.btn-warning:hover {
+  background: #e0a800;
 }
 
 .flashcard-grid {
@@ -402,20 +405,22 @@ button, .matching-item, .option-btn, .grid-card {
   gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
+  margin: 1.5rem 0;
 }
 
 #writing-input {
-  font-size: 2rem;
-  width: 150px;
+  font-size: 1.5rem;
+  padding: 0.8rem;
+  width: 250px;
   text-align: center;
   border: 2px solid var(--border);
   border-radius: 12px;
-  padding: 0.5rem;
 }
 
 .feedback {
   font-size: 1.2rem;
-  min-height: 2rem;
+  min-height: 2.5rem;
+  text-align: center;
   margin: 1rem 0;
 }
 
@@ -466,8 +471,73 @@ button:disabled {
   cursor: default;
 }
 
+/* ========== CHECKBOX LIST UNTUK BAB ========== */
+.checkbox-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem;
+  background: white;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  cursor: pointer;
+}
+
+.checkbox-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.btn-small {
+  padding: 0.3rem 0.8rem;
+  font-size: 0.9rem;
+  background: #e9ecef;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.info-note {
+  padding: 0.5rem;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* ========== PANEL SESI (HISTORI) ========== */
+.session-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card-bg);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  margin: 1rem 0;
+}
+
+.session-info {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.session-actions {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
 /* ============================================
-   PERBAIKAN MOBILE LENGKAP (DeepSeek 640a2f)
+   PERBAIKAN MOBILE LENGKAP (DEEPSEEK 640a2f)
    ============================================ */
 @media (max-width: 480px) {
   body {
@@ -485,11 +555,11 @@ button:disabled {
   }
 
   .select-group {
-    min-width: 100%; /* biarkan memenuhi lebar */
+    min-width: 100%;
   }
 
   select, button, .btn-primary {
-    width: 100%; /* tombol penuh di mobile */
+    width: 100%;
     padding: 0.8rem 1rem;
     font-size: 1rem;
   }
@@ -519,7 +589,7 @@ button:disabled {
 
   /* Grid flashcard */
   .flashcard-grid {
-    grid-template-columns: repeat(2, 1fr); /* maksimal 2 kolom */
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.8rem;
   }
 
@@ -528,7 +598,7 @@ button:disabled {
   }
 
   .kanji-display {
-    font-size: 2rem; /* lebih kecil tapi tetap terbaca */
+    font-size: 2rem;
   }
 
   .grid-card.multi-char .kanji-display {
@@ -559,7 +629,7 @@ button:disabled {
 
   /* Pilihan ganda */
   .options-grid {
-    grid-template-columns: 1fr; /* satu kolom */
+    grid-template-columns: 1fr;
   }
 
   .option-btn {
@@ -603,9 +673,24 @@ button:disabled {
   .flashcard-grid-controls {
     flex-direction: column;
   }
+
+  /* Checkbox list & panel sesi */
+  .checkbox-list {
+    max-height: 150px;
+  }
+
+  .session-panel {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+  }
+
+  .session-actions {
+    justify-content: center;
+  }
 }
 
-/* Penyesuaian tambahan untuk layar sangat kecil (opsional) */
+/* Penyesuaian tambahan untuk layar sangat kecil */
 @media (max-width: 360px) {
   .kanji-large {
     font-size: 3.8rem;
