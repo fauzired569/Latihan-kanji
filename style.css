@@ -702,3 +702,24 @@ button:disabled {
     font-size: 1.8rem;
   }
 }
+
+/* ========== PERBAIKAN TAMBAHAN UNTUK GITHUB PAGES ========== */
+html {
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.checkbox-list {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--border);
+}
+
+.checkbox-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.checkbox-list::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 10px;
+}
