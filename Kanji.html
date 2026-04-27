@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Kanji Master · Latihan Interaktif</title>
+  <!-- ==================== CSS (dari style.css) ==================== -->
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --accent: #e74c3c;
+      --light-bg: #f8f9fa;
+      --card-bg: #ffffff;
+      --border: #dee2e6;
+      --text: #212529;
+      --shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', 'Noto Sans JP', sans-serif;
+      background: var(--light-bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header, footer { text-align: center; margin: 1.5rem 0; }
+    h1 { color: var(--primary); font-weight: 600; }
+
+    .controls {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: flex-end;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .select-group { display: flex; flex-direction: column; min-width: 180px; }
+    .select-group label { font-weight: 600; margin-bottom: 0.3rem; color: var(--primary); }
+
+    select, button, input[type="number"] {
+      padding: 0.6rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    input[type="number"] { width: 100%; }
+    input[type="number"]:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+      font-weight: bold;
+      padding: 0.7rem 1.8rem;
+    }
+    .btn-primary:hover { background: #c0392b; }
+
+    .practice-area {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      min-height: 400px;
+    }
+
+    .placeholder { text-align: center; color: #6c757d; font-size: 1.2rem; padding: 4rem 0; }
+    button, .matching-item, .option-btn, .grid-card { min-height: 44px; }
+    .matching-item, .option-btn { display: flex; align-items: center; justify-content: center; }
+
+    .kanji-large { font-size: clamp(3.5rem, 15vw, 7rem); }
+    .kanji-display { font-size: clamp(1.8rem, 8vw, 2.5rem); }
+    .question { font-size: clamp(2rem, 10vw, 3rem); }
+
+    @media (hover: none) {
+      .option-btn:hover { background: white; }
+      .btn-primary:hover { transform: none; box-shadow: none; }
+    }
+
+    /* Flashcard */
+    .flashcard-container { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+    .flashcard {
+      width: 100%; max-width: 500px; height: 280px; perspective: 1000px; cursor: pointer;
+    }
+    .flashcard-inner {
+      position: relative; width: 100%; height: 100%; text-align: center;
+      transition: transform 0.6s; transform-style: preserve-3d;
+    }
+    .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+    .flashcard-front, .flashcard-back {
+      position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+      border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      padding: 1.5rem; background: white; border: 1px solid var(--border);
+    }
+    .flashcard-back { transform: rotateY(180deg); background: #f1f9ff; }
+    .meaning, .reading { font-size: 2rem; margin: 0.5rem 0; }
+    .reading { color: var(--accent); }
+
+    /* Grid Flashcard */
+    .flashcard-stats { display: flex; justify-content: space-around; margin-bottom: 1.5rem; background: #f1f3f5; padding: 1rem; border-radius: 12px; }
+    .stat-box { text-align: center; }
+    .stat-label { display: block; font-size: 0.9rem; color: #6c757d; }
+    .stat-number { display: block; font-size: 1.8rem; font-weight: bold; color: var(--primary); }
+    .flashcard-grid-controls { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+    .btn-secondary, .btn-warning { padding: 0.6rem 1.2rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    .btn-secondary { background: #6c757d; color: white; }
+    .btn-warning { background: #ffc107; color: #212529; }
+    .btn-warning:hover { background: #e0a800; }
+    .flashcard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 1rem;
+    }
+    .grid-card { aspect-ratio: 1/1; perspective: 1000px; cursor: pointer; }
+    .grid-card-inner {
+      position: relative; width: 100%; height: 100%; text-align: center;
+      transition: transform 0.4s; transform-style: preserve-3d;
+    }
+    .grid-card.flipped .grid-card-inner { transform: rotateY(180deg); }
+    .grid-card-front, .grid-card-back {
+      position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+      border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      padding: 0.5rem; background: white; border: 1px solid var(--border);
+    }
+    .grid-card-back { transform: rotateY(180deg); background: #e3f2fd; }
+    .kanji-display { font-weight: 500; margin-bottom: 0.3rem; }
+    .grid-card.multi-char .kanji-display { font-size: 1.8rem; }
+    .grid-card.many-char .kanji-display { font-size: 1.4rem; }
+    .reading-display { font-size: 1rem; color: var(--accent); margin: 0.3rem 0; }
+    .meaning-display { font-size: 0.9rem; color: #495057; word-break: break-word; }
+
+    /* Multiple Choice & Writing */
+    .question-box { text-align: center; margin-bottom: 2rem; }
+    .question { background: #f1f3f5; padding: 1.5rem; border-radius: 16px; display: inline-block; margin-bottom: 1.5rem; }
+    .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .option-btn {
+      background: white; border: 2px solid var(--border); border-radius: 12px;
+      padding: 1rem; font-size: 1.2rem; transition: all 0.1s;
+    }
+    .option-btn.correct { background: #d4edda; border-color: #28a745; }
+    .option-btn.wrong { background: #f8d7da; border-color: #dc3545; }
+    .writing-input-area { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin: 1.5rem 0; }
+    #writing-input {
+      font-size: 1.5rem; padding: 0.8rem; width: 250px; text-align: center;
+      border: 2px solid var(--border); border-radius: 12px;
+    }
+    .feedback { font-size: 1.2rem; min-height: 2.5rem; text-align: center; margin: 1rem 0; }
+
+    /* Matching Game */
+    .matching-pairs { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; }
+    .kanji-column, .meaning-column { flex: 1 1 200px; }
+    .matching-item {
+      background: white; border: 2px solid var(--border); border-radius: 12px;
+      padding: 0.8rem; margin: 0.5rem 0; cursor: pointer; text-align: center;
+      transition: 0.1s; font-size: 1.4rem;
+    }
+    .matching-item.selected { background: #cfe2ff; border-color: #0d6efd; }
+    .matching-item.matched { opacity: 0.6; pointer-events: none; background: #e2e3e5; }
+
+    .nav-controls { display: flex; justify-content: space-between; margin-top: 2rem; }
+    button:disabled { opacity: 0.5; cursor: default; }
+
+    /* Checkbox List */
+    .checkbox-list {
+      display: flex; flex-direction: column; max-height: 200px; overflow-y: auto;
+      border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem; background: white;
+    }
+    .checkbox-label { display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0; cursor: pointer; }
+    .checkbox-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+    .btn-small { padding: 0.3rem 0.8rem; font-size: 0.9rem; background: #e9ecef; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; }
+    .info-note { padding: 0.5rem; color: #6c757d; font-style: italic; }
+
+    /* Session Panel */
+    .session-panel {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      background: var(--card-bg); padding: 1rem 1.5rem; border-radius: 12px;
+      box-shadow: var(--shadow); margin: 1rem 0;
+    }
+    .session-info { font-weight: 600; color: var(--primary); }
+    .session-actions { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+
+    /* Mobile */
+    @media (max-width: 480px) {
+      body { padding: 0.5rem; }
+      h1 { font-size: 1.8rem; }
+      .controls { padding: 1rem; gap: 0.8rem; }
+      .select-group { min-width: 100%; }
+      select, button, .btn-primary { width: 100%; padding: 0.8rem 1rem; font-size: 1rem; }
+      .btn-primary { margin-top: 0.5rem; }
+      .practice-area { padding: 1rem; }
+      .flashcard { max-width: 100%; height: 220px; }
+      .kanji-large { font-size: 4.5rem; }
+      .meaning, .reading { font-size: 1.5rem; }
+      .flashcard-grid { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
+      .kanji-display { font-size: 2rem; }
+      .grid-card.multi-char .kanji-display { font-size: 1.5rem; }
+      .grid-card.many-char .kanji-display { font-size: 1.2rem; }
+      .reading-display { font-size: 0.85rem; }
+      .meaning-display { font-size: 0.8rem; }
+      .flashcard-stats { flex-direction: column; gap: 0.5rem; }
+      .stat-number { font-size: 1.5rem; }
+      .options-grid { grid-template-columns: 1fr; }
+      .option-btn { padding: 1rem; font-size: 1.1rem; }
+      .matching-pairs { flex-direction: column; gap: 1rem; }
+      .matching-item { font-size: 1.2rem; padding: 1rem; margin: 0.4rem 0; }
+      .writing-input-area { flex-direction: column; }
+      #writing-input { width: 100%; font-size: 1.8rem; }
+      .nav-controls { flex-direction: column; gap: 0.8rem; }
+      .nav-controls button { width: 100%; }
+      .flashcard-grid-controls { flex-direction: column; }
+      .checkbox-list { max-height: 150px; }
+      .session-panel { flex-direction: column; align-items: stretch; gap: 0.8rem; }
+      .session-actions { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📚 Kanji Master</h1>
+    <p>Pilih buku dan bab (bisa lebih dari satu), lalu pilih mode latihan.</p>
+  </header>
+
+  <main>
+    <!-- Panel Kontrol -->
+    <section class="controls">
+      <div class="select-group">
+        <label for="book-select">📖 Buku:</label>
+        <select id="book-select"></select>
+      </div>
+
+      <div class="select-group" id="lesson-checkbox-group">
+        <label>📌 Pelajaran:</label>
+        <div id="lesson-checkboxes" class="checkbox-list"></div>
+        <div class="checkbox-actions">
+          <button type="button" id="select-all-lessons" class="btn-small">✓ Pilih Semua</button>
+          <button type="button" id="deselect-all-lessons" class="btn-small">✗ Bersihkan</button>
+        </div>
+      </div>
+
+      <div class="select-group">
+        <label for="mode-select">🎮 Mode Latihan:</label>
+        <select id="mode-select">
+          <option value="flashcard">🗂️ Flashcard (Grid)</option>
+          <option value="multiple-meaning">❓ Pilihan Ganda (Arti)</option>
+          <option value="multiple-reading">🔊 Pilihan Ganda (Bacaan)</option>
+          <option value="writing-kanji">✍️ Tulis Kanji</option>
+          <option value="writing-reading">✍️ Tulis Bacaan (Hiragana)</option>
+          <option value="matching">🃏 Mencocokkan</option>
+        </select>
+      </div>
+
+      <div class="select-group">
+        <label for="card-count">🔢 Jumlah Kartu:</label>
+        <input type="number" id="card-count" min="1" max="200" value="20">
+      </div>
+
+      <button id="start-btn" class="btn-primary">Mulai Latihan</button>
+    </section>
+
+    <!-- Panel Histori & Kontrol Sesi -->
+    <section id="session-panel" class="session-panel" style="display: none;">
+      <div class="session-info">
+        <span id="histori-count">Kanji sudah dilatih: 0</span>
+      </div>
+      <div class="session-actions">
+        <button id="repeat-session-btn" class="btn-secondary">🔄 Ulangi Sesi</button>
+        <button id="new-session-btn" class="btn-secondary">✨ Latihan Baru</button>
+        <button id="reset-history-btn" class="btn-warning">🗑️ Reset Histori</button>
+      </div>
+    </section>
+
+    <!-- Area Latihan Dinamis -->
+    <section id="practice-area" class="practice-area">
+      <div class="placeholder">👆 Pilih pelajaran dan mode, lalu klik "Mulai Latihan"</div>
+    </section>
+  </main>
+
+  <footer>
+    <p>🇯🇵 Selamat belajar! · Data berdasarkan buku ajar</p>
+  </footer>
+
+  <!-- ==================== JAVASCRIPT (diperbaiki dengan Data%20Kanji.json) ==================== -->
+  <script>
+    (function() {
+      // Variabel global seperti sebelumnya
+      let currentBook = '';
+      let currentSelectedLessons = [];
+      let currentMode = '';
+      let currentItems = [];
+      let currentIndex = 0;
+      let score = 0;
+      let practicedKanjiSet = new Set();
+      let usedMatchingItems = [];
+
+      // Referensi DOM
+      let bookSelect, lessonCheckboxesDiv, modeSelect, startBtn, practiceArea;
+      let cardCountInput, sessionPanel, historiCountSpan;
+      let repeatSessionBtn, newSessionBtn, resetHistoryBtn;
+      let selectAllBtn, deselectAllBtn;
+
+      // Data kanji akan di-load dari JSON (diperbaiki)
+      let kanjiData = null;
+
+      // ---------- LOAD DATA JSON (menggunakan Data%20Kanji.json) ----------
+      async function loadKanjiData() {
+        try {
+          // PERBAIKAN: menggunakan nama file dari deepseek_javascript_20260427_6ca3a9.js
+          const response = await fetch('Data%20Kanji.json');
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          kanjiData = await response.json();
+          return true;
+        } catch (err) {
+          alert('Gagal memuat Data Kanji.json. Pastikan file berada di folder yang sama dan diakses melalui server lokal (bukan file://).\nDetail: ' + err.message);
+          console.error(err);
+          return false;
+        }
+      }
+
+      // ---------- INISIALISASI UI ----------
+      function initBookSelect() {
+        bookSelect.innerHTML = '';
+        const books = Object.keys(kanjiData);
+        if (books.length === 0) {
+          bookSelect.innerHTML = '<option value="">-- Tidak ada buku --</option>';
+          return;
+        }
+        books.forEach(book => {
+          const option = document.createElement('option');
+          option.value = book;
+          option.textContent = book;
+          bookSelect.appendChild(option);
+        });
+        const allOption = document.createElement('option');
+        allOption.value = 'all';
+        allOption.textContent = '📚 Semua Buku';
+        bookSelect.appendChild(allOption);
+        bookSelect.value = books[0];
+        renderLessonCheckboxes(books[0]);
+      }
+
+      function renderLessonCheckboxes(book) {
+        lessonCheckboxesDiv.innerHTML = '';
+        if (!kanjiData || book === 'all') {
+          lessonCheckboxesDiv.innerHTML = '<div class="info-note">Semua bab dari semua buku akan digunakan.</div>';
+          return;
+        }
+        const lessons = Object.keys(kanjiData[book]);
+        if (lessons.length === 0) {
+          lessonCheckboxesDiv.innerHTML = '<div class="info-note">Tidak ada bab tersedia.</div>';
+          return;
+        }
+        lessons.forEach(lesson => {
+          const label = document.createElement('label');
+          label.className = 'checkbox-label';
+          const cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.value = lesson;
+          cb.checked = true;
+          label.appendChild(cb);
+          label.appendChild(document.createTextNode(lesson));
+          lessonCheckboxesDiv.appendChild(label);
+        });
+      }
+
+      function getSelectedItems() {
+        if (!kanjiData) return [];
+        const book = bookSelect.value;
+        if (book === 'all') {
+          let items = [];
+          for (let b in kanjiData) {
+            for (let l in kanjiData[b]) {
+              items = items.concat(kanjiData[b][l]);
+            }
+          }
+          return items;
+        } else {
+          const checkboxes = lessonCheckboxesDiv.querySelectorAll('input[type="checkbox"]:checked');
+          const selectedLessons = Array.from(checkboxes).map(cb => cb.value);
+          if (selectedLessons.length === 0) {
+            alert('Pilih setidaknya satu bab.');
+            return [];
+          }
+          let items = [];
+          selectedLessons.forEach(lesson => {
+            if (kanjiData[book] && kanjiData[book][lesson]) {
+              items = items.concat(kanjiData[book][lesson]);
+            }
+          });
+          return items;
+        }
+      }
+
+      function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      function updateHistoriCount() {
+        historiCountSpan.textContent = `Kanji sudah dilatih: ${practicedKanjiSet.size}`;
+      }
+
+      function showCompletionScreen() {
+        practiceArea.innerHTML = `<div class="placeholder">🎉 Latihan selesai! Skor: ${score}/${currentItems.length}</div>`;
+      }
+
+      // ---------- RENDER PRACTICE (dispatch mode) ----------
+      function renderPractice() {
+        switch (currentMode) {
+          case 'flashcard': renderFlashcard(); break;
+          case 'multiple-meaning': renderMultipleChoice('meaning'); break;
+          case 'multiple-reading': renderMultipleChoice('reading'); break;
+          case 'writing-kanji': renderWriting('kanji'); break;
+          case 'writing-reading': renderWriting('reading'); break;
+          case 'matching': renderMatching(); break;
+          default: practiceArea.innerHTML = '<div class="placeholder">Mode belum tersedia.</div>';
+        }
+      }
+
+      // ---------- FLASHCARD GRID ----------
+      function renderFlashcard() {
+        let itemsToShow = currentItems;
+        if (itemsToShow.length === 0) {
+          practiceArea.innerHTML = '<div class="placeholder">Tidak ada kanji.</div>';
+          return;
+        }
+        let html = `
+          <div class="flashcard-grid-controls">
+            <button id="refresh-grid-btn" class="btn-secondary">🔄 Acak & Tampilkan Baru</button>
+          </div>
+          <div class="flashcard-grid" id="flashcard-grid">
+        `;
+        itemsToShow.forEach(item => {
+          const charClass = item.kanji.length >= 4 ? 'many-char' : (item.kanji.length === 3 ? 'multi-char' : '');
+          html += `
+            <div class="grid-card ${charClass}" data-kanji="${item.kanji}">
+              <div class="grid-card-inner">
+                <div class="grid-card-front">
+                  <div class="kanji-display">${item.kanji}</div>
+                </div>
+                <div class="grid-card-back">
+                  <div class="kanji-display">${item.kanji}</div>
+                  <div class="reading-display">${item.reading}</div>
+                  <div class="meaning-display">${item.meaning}</div>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        html += `</div>`;
+        practiceArea.innerHTML = html;
+
+        const cards = document.querySelectorAll('.grid-card');
+        cards.forEach(card => {
+          card.addEventListener('click', function() {
+            cards.forEach(c => { if (c !== this) c.classList.remove('flipped'); });
+            this.classList.toggle('flipped');
+          });
+        });
+
+        document.getElementById('refresh-grid-btn').addEventListener('click', () => {
+          let pool = getSelectedItems();
+          pool = shuffleArray(pool);
+          let desiredCount = parseInt(cardCountInput.value, 10);
+          if (isNaN(desiredCount) || desiredCount < 1) desiredCount = 20;
+          currentItems = pool.slice(0, Math.min(desiredCount, pool.length));
+          renderFlashcard();
+        });
+      }
+
+      // ---------- MULTIPLE CHOICE ----------
+      function renderMultipleChoice(type) {
+        if (currentIndex >= currentItems.length) {
+          showCompletionScreen();
+          return;
+        }
+        const item = currentItems[currentIndex];
+        const correctAnswer = type === 'meaning' ? item.meaning : item.reading;
+        let options = [correctAnswer];
+        while (options.length < 4) {
+          const randomItem = currentItems[Math.floor(Math.random() * currentItems.length)];
+          const distractor = type === 'meaning' ? randomItem.meaning : randomItem.reading;
+          if (!options.includes(distractor) && distractor !== correctAnswer) {
+            options.push(distractor);
+          }
+        }
+        options = shuffleArray(options);
+
+        const questionText = type === 'meaning' ? 'Apa arti dari kanji berikut?' : 'Bagaimana cara baca kanji berikut?';
+        let html = `
+          <div class="question-box">
+            <div class="question">${item.kanji}</div>
+            <p>${questionText}</p>
+          </div>
+          <div class="options-grid" id="options-container">
+        `;
+        options.forEach(opt => html += `<button class="option-btn" data-value="${opt}">${opt}</button>`);
+        html += `</div><div class="nav-controls"><button id="next-question-btn" disabled>Lanjut ▶</button></div>`;
+        practiceArea.innerHTML = html;
+
+        const optionBtns = document.querySelectorAll('.option-btn');
+        const nextBtn = document.getElementById('next-question-btn');
+        let answered = false;
+
+        optionBtns.forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            if (answered) return;
+            answered = true;
+            const selected = e.target.dataset.value;
+            if (selected === correctAnswer) {
+              e.target.classList.add('correct');
+              score++;
+            } else {
+              e.target.classList.add('wrong');
+              optionBtns.forEach(b => { if (b.dataset.value === correctAnswer) b.classList.add('correct'); });
+            }
+            nextBtn.disabled = false;
+          });
+        });
+
+        nextBtn.addEventListener('click', () => {
+          currentIndex++;
+          renderMultipleChoice(type);
+        });
+      }
+
+      // ---------- WRITING ----------
+      function renderWriting(submode) {
+        if (currentIndex >= currentItems.length) {
+          showCompletionScreen();
+          return;
+        }
+        const item = currentItems[currentIndex];
+        const promptText = submode === 'kanji'
+          ? `Tulis kanji untuk: <strong>${item.meaning}</strong> (${item.reading})`
+          : `Tulis cara baca (hiragana) untuk: <span style="font-size:3rem;">${item.kanji}</span>`;
+
+        practiceArea.innerHTML = `
+          <div class="question-box"><p>${promptText}</p></div>
+          <div class="writing-input-area">
+            <input type="text" id="writing-input" placeholder="${submode === 'kanji' ? 'Tulis kanji...' : 'Tulis hiragana...'}" autocomplete="off" autofocus>
+            <button id="submit-writing-btn" class="btn-primary">Periksa</button>
+          </div>
+          <div id="writing-feedback" class="feedback"></div>
+          <div class="nav-controls">
+            <button id="next-question-btn" disabled>Lanjut ▶</button>
+          </div>
+        `;
+
+        const input = document.getElementById('writing-input');
+        const submitBtn = document.getElementById('submit-writing-btn');
+        const feedbackDiv = document.getElementById('writing-feedback');
+        const nextBtn = document.getElementById('next-question-btn');
+        let answered = false;
+
+        function checkAnswer() {
+          if (answered) return;
+          const userAnswer = input.value.trim();
+          const correct = submode === 'kanji' ? item.kanji : item.reading;
+          if (userAnswer === correct) {
+            feedbackDiv.innerHTML = '✅ Benar!';
+            feedbackDiv.style.color = '#28a745';
+            score++;
+            answered = true;
+            nextBtn.disabled = false;
+            submitBtn.disabled = true;
+            input.disabled = true;
+          } else {
+            feedbackDiv.innerHTML = '❌ Salah. Coba lagi.';
+            feedbackDiv.style.color = '#dc3545';
+            input.focus();
+          }
+        }
+
+        submitBtn.addEventListener('click', checkAnswer);
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
+        nextBtn.addEventListener('click', () => {
+          currentIndex++;
+          renderWriting(submode);
+        });
+      }
+
+      // ---------- MATCHING ----------
+      function renderMatching() {
+        let availablePool = currentItems.filter(item => !usedMatchingItems.includes(item.kanji));
+        if (availablePool.length === 0) {
+          practiceArea.innerHTML = `
+            <div class="placeholder">🎉 Semua kanji sudah dicocokkan!</div>
+            <div style="text-align:center; margin-top:1rem;">
+              <button id="reset-matching-full" class="btn-primary">Reset Pasangan & Mulai Baru</button>
+            </div>
+          `;
+          document.getElementById('reset-matching-full').addEventListener('click', () => {
+            usedMatchingItems = [];
+            renderMatching();
+          });
+          return;
+        }
+
+        const maxPairs = Math.min(8, availablePool.length);
+        const selectedItems = shuffleArray([...availablePool]).slice(0, maxPairs);
+        selectedItems.forEach(item => usedMatchingItems.push(item.kanji));
+
+        const kanjis = shuffleArray([...selectedItems]);
+        const meanings = shuffleArray([...selectedItems]);
+
+        practiceArea.innerHTML = `
+          <div class="matching-pairs">
+            <div class="kanji-column"><h3>Kanji</h3><div id="kanji-list"></div></div>
+            <div class="meaning-column"><h3>Arti</h3><div id="meaning-list"></div></div>
+          </div>
+          <div class="nav-controls">
+            <button id="shuffle-matching-btn">🔄 Acak Ulang</button>
+            <button id="reset-matching-hist-btn">🗑️ Reset Pasangan</button>
+            <span id="match-score">Pasangan: 0/${selectedItems.length}</span>
+          </div>
+        `;
+
+        const kanjiListDiv = document.getElementById('kanji-list');
+        const meaningListDiv = document.getElementById('meaning-list');
+        kanjis.forEach(item => {
+          kanjiListDiv.innerHTML += `<div class="matching-item" data-type="kanji" data-id="${item.kanji}" data-pair="${item.meaning}">${item.kanji}</div>`;
+        });
+        meanings.forEach(item => {
+          meaningListDiv.innerHTML += `<div class="matching-item" data-type="meaning" data-id="${item.meaning}" data-pair="${item.kanji}">${item.meaning}</div>`;
+        });
+
+        let selectedKanji = null;
+        let matchedCount = 0;
+        const totalPairs = selectedItems.length;
+        const matchScoreSpan = document.getElementById('match-score');
+
+        function updateMatchScore() {
+          matchScoreSpan.textContent = `Pasangan: ${matchedCount}/${totalPairs}`;
+          if (matchedCount === totalPairs) setTimeout(() => alert('🎉 Selamat!'), 100);
+        }
+
+        function clickHandler(e) {
+          const el = e.currentTarget;
+          if (el.classList.contains('matched')) return;
+          if (el.dataset.type === 'kanji') {
+            document.querySelectorAll('[data-type="kanji"]').forEach(k => k.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedKanji = el;
+          } else {
+            if (!selectedKanji) { alert('Pilih kanji dulu!'); return; }
+            const kanjiEl = selectedKanji;
+            if (kanjiEl.dataset.pair === el.dataset.id) {
+              kanjiEl.classList.add('matched');
+              el.classList.add('matched');
+              kanjiEl.classList.remove('selected');
+              matchedCount++;
+              updateMatchScore();
+              selectedKanji = null;
+            } else {
+              alert('Pasangan tidak cocok!');
+              kanjiEl.classList.remove('selected');
+              selectedKanji = null;
+            }
+          }
+        }
+
+        document.querySelectorAll('.matching-item').forEach(el => el.addEventListener('click', clickHandler));
+        document.getElementById('shuffle-matching-btn').addEventListener('click', () => renderMatching());
+        document.getElementById('reset-matching-hist-btn').addEventListener('click', () => {
+          usedMatchingItems = [];
+          renderMatching();
+        });
+        updateMatchScore();
+      }
+
+      // ---------- START PRACTICE ----------
+      function startPractice(useHistoryFilter = true) {
+        const allAvailable = getSelectedItems();
+        if (allAvailable.length === 0) {
+          practiceArea.innerHTML = '<div class="placeholder">❌ Tidak ada kanji yang dipilih.</div>';
+          return;
+        }
+
+        let pool = allAvailable;
+        if (useHistoryFilter) {
+          pool = allAvailable.filter(item => !practicedKanjiSet.has(item.kanji));
+          if (pool.length === 0) {
+            practiceArea.innerHTML = '<div class="placeholder">🎉 Semua kanji sudah dilatih! Reset histori untuk mengulang.</div>';
+            sessionPanel.style.display = 'flex';
+            updateHistoriCount();
+            return;
+          }
+        }
+
+        pool = shuffleArray([...pool]);
+        let desiredCount = parseInt(cardCountInput.value, 10);
+        if (isNaN(desiredCount) || desiredCount < 1) desiredCount = 20;
+        const maxItems = Math.min(desiredCount, pool.length);
+        currentItems = pool.slice(0, maxItems);
+
+        if (useHistoryFilter) {
+          currentItems.forEach(item => practicedKanjiSet.add(item.kanji));
+        }
+
+        currentBook = bookSelect.value;
+        currentSelectedLessons = bookSelect.value === 'all' ? [] :
+          Array.from(lessonCheckboxesDiv.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+        currentMode = modeSelect.value;
+        currentIndex = 0;
+        score = 0;
+        usedMatchingItems = [];
+
+        sessionPanel.style.display = 'flex';
+        updateHistoriCount();
+
+        if (currentItems.length === 0) {
+          practiceArea.innerHTML = '<div class="placeholder">❌ Tidak ada kanji yang memenuhi kriteria.</div>';
+          return;
+        }
+        renderPractice();
+      }
+
+      // ---------- EVENT LISTENERS ----------
+      function bindEvents() {
+        bookSelect.addEventListener('change', (e) => renderLessonCheckboxes(e.target.value));
+
+        selectAllBtn.addEventListener('click', () => {
+          const checkboxes = lessonCheckboxesDiv.querySelectorAll('input[type="checkbox"]');
+          checkboxes.forEach(cb => cb.checked = true);
+        });
+
+        deselectAllBtn.addEventListener('click', () => {
+          const checkboxes = lessonCheckboxesDiv.querySelectorAll('input[type="checkbox"]');
+          checkboxes.forEach(cb => cb.checked = false);
+        });
+
+        startBtn.addEventListener('click', () => startPractice(true));
+
+        repeatSessionBtn.addEventListener('click', () => {
+          if (currentItems.length > 0) {
+            currentIndex = 0;
+            score = 0;
+            renderPractice();
+          } else {
+            alert('Tidak ada sesi aktif.');
+          }
+        });
+
+        newSessionBtn.addEventListener('click', () => startPractice(true));
+
+        resetHistoryBtn.addEventListener('click', () => {
+          practicedKanjiSet.clear();
+          updateHistoriCount();
+          alert('Histori telah direset. Sekarang semua kanji tersedia kembali.');
+        });
+      }
+
+      // ---------- INISIALISASI SETELAH LOAD ----------
+      window.addEventListener('DOMContentLoaded', async () => {
+        // Ambil referensi DOM
+        bookSelect = document.getElementById('book-select');
+        lessonCheckboxesDiv = document.getElementById('lesson-checkboxes');
+        modeSelect = document.getElementById('mode-select');
+        startBtn = document.getElementById('start-btn');
+        practiceArea = document.getElementById('practice-area');
+        cardCountInput = document.getElementById('card-count');
+        sessionPanel = document.getElementById('session-panel');
+        historiCountSpan = document.getElementById('histori-count');
+        repeatSessionBtn = document.getElementById('repeat-session-btn');
+        newSessionBtn = document.getElementById('new-session-btn');
+        resetHistoryBtn = document.getElementById('reset-history-btn');
+        selectAllBtn = document.getElementById('select-all-lessons');
+        deselectAllBtn = document.getElementById('deselect-all-lessons');
+
+        // Load data (nama file sudah diperbaiki)
+        const success = await loadKanjiData();
+        if (!success) {
+          practiceArea.innerHTML = '<div class="placeholder">❌ Gagal memuat Data Kanji.json. Pastikan file tersedia dan diakses melalui server HTTP.</div>';
+          return;
+        }
+
+        // Inisialisasi UI
+        initBookSelect();
+        updateHistoriCount();
+        bindEvents();
+      });
+    })();
+  </script>
+</body>
+</html>

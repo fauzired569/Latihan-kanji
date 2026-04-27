@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Belajar Bahasa Jepang · Kanji & Kosakata</title>
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --accent-kanji: #e74c3c;
+      --accent-kosakata: #e67e22;
+      --accent-mix: #8e44ad;
+      --light-bg: #f8f9fa;
+      --card-bg: #ffffff;
+      --border: #dee2e6;
+      --text: #212529;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Noto Sans JP', 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 1rem;
+      max-width: 1300px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+
+    header,
+    footer {
+      text-align: center;
+      margin: 1.2rem 0;
+    }
+    h1 {
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 2.2rem;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.3rem;
+    }
+    .subtitle {
+      color: #6c757d;
+      font-size: 1rem;
+    }
+
+    /* Kartu navigasi */
+    .nav-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    .nav-card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 2rem 1.8rem;
+      box-shadow: var(--shadow);
+      flex: 1 1 280px;
+      max-width: 380px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text);
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 2px solid transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .nav-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    }
+    .nav-card.kanji {
+      border-color: #f5c6cb;
+    }
+    .nav-card.kanji:hover {
+      border-color: var(--accent-kanji);
+    }
+    .nav-card.kosakata {
+      border-color: #fde3bd;
+    }
+    .nav-card.kosakata:hover {
+      border-color: var(--accent-kosakata);
+    }
+    .nav-card.mix {
+      border-color: #d4c4e3;
+    }
+    .nav-card.mix:hover {
+      border-color: var(--accent-mix);
+    }
+
+    .nav-icon {
+      font-size: 3.5rem;
+    }
+    .nav-card h2 {
+      font-size: 1.6rem;
+      margin: 0.3rem 0;
+    }
+    .nav-card p {
+      color: #6c757d;
+      font-size: 0.95rem;
+    }
+    .btn-nav {
+      display: inline-block;
+      margin-top: 0.8rem;
+      padding: 0.7rem 2rem;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+      text-decoration: none;
+      color: white;
+    }
+    .btn-kanji {
+      background: var(--accent-kanji);
+    }
+    .btn-kanji:hover {
+      background: #c0392b;
+    }
+    .btn-kosakata {
+      background: var(--accent-kosakata);
+    }
+    .btn-kosakata:hover {
+      background: #cf711f;
+    }
+    .btn-mix {
+      background: var(--accent-mix);
+    }
+    .btn-mix:hover {
+      background: #7d3c98;
+    }
+
+    /* Panel kontrol mode campuran */
+    .mix-panel {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 1.8rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+      border: 2px solid #d4c4e3;
+    }
+    .mix-panel h3 {
+      text-align: center;
+      color: var(--accent-mix);
+      margin-bottom: 1.2rem;
+      font-size: 1.4rem;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .select-group {
+      display: flex;
+      flex-direction: column;
+      min-width: 160px;
+    }
+    .select-group label {
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      color: #6c3483;
+      font-size: 0.9rem;
+    }
+    select,
+    button,
+    input[type="number"] {
+      padding: 0.7rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 40px;
+      font-size: 0.95rem;
+      background: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    input[type="number"] {
+      text-align: center;
+      width: 100%;
+    }
+    select:focus,
+    input:focus {
+      outline: 2px solid var(--accent-mix);
+      outline-offset: 2px;
+    }
+    .btn-primary {
+      background: var(--accent-mix);
+      color: white;
+      border: none;
+      font-weight: bold;
+      padding: 0.7rem 1.8rem;
+    }
+    .btn-primary:hover {
+      background: #7d3c98;
+    }
+
+    /* Area latihan */
+    .practice-area {
+      background: var(--card-bg);
+      border-radius: 28px;
+      padding: 1.8rem;
+      box-shadow: var(--shadow);
+      min-height: 450px;
+    }
+    .placeholder {
+      text-align: center;
+      color: #6c757d;
+      font-size: 1.2rem;
+      padding: 3rem 1rem;
+    }
+
+    /* Session panel */
+    .session-panel {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      background: #f3eef8;
+      padding: 1rem 1.5rem;
+      border-radius: 50px;
+      margin-bottom: 1.5rem;
+      gap: 0.8rem;
+    }
+    .session-info {
+      font-weight: 700;
+      color: #6c3483;
+    }
+    .session-actions {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 40px;
+      padding: 0.5rem 1.2rem;
+      font-weight: 600;
+    }
+    .btn-warning {
+      background: #ffc107;
+      color: #212529;
+      border: none;
+      border-radius: 40px;
+      padding: 0.5rem 1.2rem;
+      font-weight: 600;
+    }
+    .btn-warning:hover {
+      background: #e0a800;
+    }
+
+    /* Flashcard Grid */
+    .flashcard-grid-controls {
+      margin-bottom: 1rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .flashcard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 1rem;
+    }
+    .grid-card {
+      aspect-ratio: 1 / 0.9;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+    .grid-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.4s;
+      transform-style: preserve-3d;
+      border-radius: 20px;
+    }
+    .grid-card.flipped .grid-card-inner {
+      transform: rotateY(180deg);
+    }
+    .grid-card-front,
+    .grid-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 20px;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0.6rem;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e0d4f0;
+      overflow-y: auto;
+    }
+    .grid-card-back {
+      transform: rotateY(180deg);
+      background: #f9f5ff;
+    }
+    .question-display {
+      font-size: 1.6rem;
+      font-weight: bold;
+      word-break: break-word;
+      line-height: 1.3;
+    }
+    .reading-display {
+      font-size: 0.85rem;
+      color: var(--accent-mix);
+      margin: 0.3rem 0;
+    }
+    .meaning-display {
+      font-size: 0.8rem;
+      color: #3e5a3a;
+      word-break: break-word;
+    }
+    .type-badge {
+      font-size: 0.65rem;
+      background: #e8d5f5;
+      color: #6c3483;
+      padding: 0.15rem 0.6rem;
+      border-radius: 20px;
+      margin-top: 0.3rem;
+    }
+
+    /* Multiple choice */
+    .question-box {
+      text-align: center;
+      margin-bottom: 1.8rem;
+    }
+    .question {
+      background: #f3eef8;
+      padding: 1rem 1.5rem;
+      border-radius: 60px;
+      display: inline-block;
+      font-size: 2rem;
+      font-weight: bold;
+      word-break: break-word;
+    }
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.9rem;
+    }
+    .option-btn {
+      background: white;
+      border: 2px solid #d4c4e3;
+      border-radius: 60px;
+      padding: 0.9rem;
+      font-size: 1rem;
+      transition: 0.1s;
+      word-break: break-word;
+      cursor: pointer;
+    }
+    .option-btn.correct {
+      background: #d4edda;
+      border-color: #2e7d32;
+    }
+    .option-btn.wrong {
+      background: #ffe0db;
+      border-color: #c7362b;
+    }
+
+    /* Writing */
+    .writing-input-area {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin: 1.5rem 0;
+      flex-wrap: wrap;
+    }
+    #writing-input {
+      font-size: 1.3rem;
+      padding: 0.8rem;
+      width: 280px;
+      text-align: center;
+      border-radius: 56px;
+      border: 2px solid #d4c4e3;
+    }
+    .feedback {
+      font-size: 1.1rem;
+      text-align: center;
+      margin: 0.8rem 0;
+      min-height: 2.5rem;
+    }
+
+    /* Matching */
+    .matching-pairs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+    }
+    .kanji-column,
+    .meaning-column {
+      flex: 1 1 240px;
+    }
+    .matching-item {
+      background: #f9f5ff;
+      border: 2px solid #d4c4e3;
+      border-radius: 60px;
+      padding: 0.9rem 0.5rem;
+      margin: 0.6rem 0;
+      cursor: pointer;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 500;
+      word-break: break-word;
+    }
+    .matching-item.selected {
+      background: #e8d5f5;
+      border-color: #8e44ad;
+    }
+    .matching-item.matched {
+      opacity: 0.6;
+      pointer-events: none;
+      background: #d4cfc2;
+      text-decoration: line-through;
+    }
+
+    .nav-controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    /* Responsif */
+    @media (max-width: 600px) {
+      body {
+        padding: 0.5rem;
+      }
+      h1 {
+        font-size: 1.8rem;
+      }
+      .nav-cards {
+        flex-direction: column;
+        align-items: center;
+      }
+      .nav-card {
+        max-width: 100%;
+        padding: 1.5rem;
+      }
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .select-group {
+        min-width: 100%;
+      }
+      .flashcard-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.7rem;
+      }
+      .question-display {
+        font-size: 1.3rem;
+      }
+      .reading-display {
+        font-size: 0.7rem;
+      }
+      .meaning-display {
+        font-size: 0.7rem;
+      }
+      .question {
+        font-size: 1.5rem;
+      }
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+      .option-btn {
+        padding: 0.7rem;
+        font-size: 0.9rem;
+      }
+      .writing-input-area {
+        flex-direction: column;
+        align-items: center;
+      }
+      .matching-item {
+        font-size: 0.9rem;
+      }
+      .session-panel {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+      }
+      .btn-primary,
+      .btn-secondary {
+        width: 100%;
+      }
+    }
+    @media (max-width: 380px) {
+      .flashcard-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .question-display {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📚 Belajar Bahasa Jepang</h1>
+    <p class="subtitle">Pilih fokus latihan: Kanji, Kosakata, atau Campuran Random</p>
+  </header>
+
+  <main>
+    <!-- Kartu Navigasi -->
+    <section class="nav-cards">
+      <a href="Kanji.html" class="nav-card kanji">
+        <span class="nav-icon">🈴</span>
+        <h2>Kanji Master</h2>
+        <p>Latihan Kanji berdasarkan buku dan bab. Tersedia mode flashcard, pilihan ganda, menulis, dan mencocokkan.</p>
+        <span class="btn-nav btn-kanji">Buka Latihan Kanji →</span>
+      </a>
+      <a href="Kosakata.html" class="nav-card kosakata">
+        <span class="nav-icon">📖</span>
+        <h2>Kosakata Master</h2>
+        <p>Latihan Kosakata berdasarkan tingkat dan bab. Kuasai kata, bacaan, dan arti dengan berbagai mode.</p>
+        <span class="btn-nav btn-kosakata">Buka Latihan Kosakata →</span>
+      </a>
+      <div class="nav-card mix" id="mix-card">
+        <span class="nav-icon">🎲</span>
+        <h2>Latihan Campuran</h2>
+        <p>Soal random dari Kanji & Kosakata. Uji kemampuanmu dengan mode flashcard, pilihan ganda, menulis, dan mencocokkan.</p>
+        <span class="btn-nav btn-mix" onclick="document.getElementById('mix-panel').scrollIntoView({behavior:'smooth'})">Mulai Campuran ↓</span>
+      </div>
+    </section>
+
+    <!-- Panel Latihan Campuran -->
+    <section class="mix-panel" id="mix-panel">
+      <h3>🎲 Latihan Campuran (Kanji + Kosakata)</h3>
+      <div class="controls">
+        <div class="select-group">
+          <label for="mix-mode">🎮 Mode Latihan:</label>
+          <select id="mix-mode">
+            <option value="flashcard">🗂️ Flashcard (Grid)</option>
+            <option value="multiple-meaning">❓ Pilihan Ganda (Arti)</option>
+            <option value="multiple-reading">🔊 Pilihan Ganda (Bacaan)</option>
+            <option value="writing-question">✍️ Tulis Kanji/Kata</option>
+            <option value="writing-reading">✍️ Tulis Bacaan</option>
+            <option value="matching">🃏 Mencocokkan</option>
+          </select>
+        </div>
+        <div class="select-group">
+          <label for="mix-count">🔢 Jumlah Soal:</label>
+          <input type="number" id="mix-count" min="1" max="200" value="20">
+        </div>
+        <button id="mix-start-btn" class="btn-primary">Mulai Latihan Campuran</button>
+      </div>
+      <div id="mix-session-panel" class="session-panel" style="display: none;">
+        <div class="session-info"><span id="mix-histori-count">Soal sudah dilatih: 0</span></div>
+        <div class="session-actions">
+          <button id="mix-repeat-btn" class="btn-secondary">🔄 Ulangi Sesi</button>
+          <button id="mix-new-btn" class="btn-secondary">✨ Latihan Baru</button>
+          <button id="mix-reset-btn" class="btn-warning">🗑️ Reset Histori</button>
+        </div>
+      </div>
+      <div id="mix-practice-area" class="practice-area">
+        <div class="placeholder">👆 Pilih mode dan klik "Mulai Latihan Campuran"</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>🇯🇵 Selamat belajar! · Data lengkap & ramah mobile</p>
+  </footer>
+
+  <script>
+    (function() {
+      // Variabel global
+      let allMixedItems = [];
+      let currentMixItems = [];
+      let currentMixIndex = 0;
+      let mixScore = 0;
+      let practicedMixSet = new Set();
+      let usedMatchingMixIds = [];
+      let currentMixMode = '';
+
+      // DOM
+      const mixModeSelect = document.getElementById('mix-mode');
+      const mixCountInput = document.getElementById('mix-count');
+      const mixStartBtn = document.getElementById('mix-start-btn');
+      const mixPracticeArea = document.getElementById('mix-practice-area');
+      const mixSessionPanel = document.getElementById('mix-session-panel');
+      const mixHistoriCountSpan = document.getElementById('mix-histori-count');
+      const mixRepeatBtn = document.getElementById('mix-repeat-btn');
+      const mixNewBtn = document.getElementById('mix-new-btn');
+      const mixResetBtn = document.getElementById('mix-reset-btn');
+
+      // Load data JSON
+      async function loadAllData() {
+        try {
+          const [kanjiRes, kosakataRes] = await Promise.all([
+            fetch('Data%20Kanji.json'),
+            fetch('Data%20Kosakata.json')
+          ]);
+          if (!kanjiRes.ok || !kosakataRes.ok) throw new Error('Gagal memuat data JSON');
+          const kanjiData = await kanjiRes.json();
+          const kosakataData = await kosakataRes.json();
+
+          const mixed = [];
+
+          // Proses data Kanji
+          for (const book in kanjiData) {
+            for (const lesson in kanjiData[book]) {
+              for (const item of kanjiData[book][lesson]) {
+                mixed.push({
+                  id: 'kanji_' + book + '_' + lesson + '_' + item.kanji,
+                  type: 'kanji',
+                  question: item.kanji,
+                  meaning: item.meaning,
+                  reading: item.reading,
+                  book: book,
+                  lesson: lesson
+                });
+              }
+            }
+          }
+
+          // Proses data Kosakata (carry-over level)
+          let currentLevel = 'Pemula';
+          for (let i = 0; i < kosakataData.length; i++) {
+            const entry = kosakataData[i];
+            if (entry.level) currentLevel = entry.level;
+            if (!entry.bab || !entry.kosakata) continue;
+            for (let j = 0; j < entry.kosakata.length; j++) {
+              const vocab = entry.kosakata[j];
+              mixed.push({
+                id: 'kosa_' + i + '_' + j,
+                type: 'kosakata',
+                question: vocab.kata,
+                meaning: vocab.arti,
+                reading: vocab.romaji,
+                keterangan: vocab.keterangan || '',
+                level: currentLevel,
+                bab: entry.bab,
+                judul: entry.judul
+              });
+            }
+          }
+
+          allMixedItems = mixed;
+          return true;
+        } catch (err) {
+          console.error(err);
+          mixPracticeArea.innerHTML =
+            '<div class="placeholder">❌ Gagal memuat data. Pastikan file Data Kanji.json dan Data Kosakata.json tersedia.</div>';
+          return false;
+        }
+      }
+
+      function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      function updateMixHistori() {
+        mixHistoriCountSpan.textContent = `Soal sudah dilatih: ${practicedMixSet.size}`;
+      }
+
+      function showMixCompletion() {
+        mixPracticeArea.innerHTML =
+          `<div class="placeholder">🎉 Latihan selesai! Skor: ${mixScore}/${currentMixItems.length}</div>`;
+      }
+
+      // Render sesuai mode
+      function renderMixPractice() {
+        switch (currentMixMode) {
+          case 'flashcard':
+            renderMixFlashcard();
+            break;
+          case 'multiple-meaning':
+            renderMixMultipleChoice('meaning');
+            break;
+          case 'multiple-reading':
+            renderMixMultipleChoice('reading');
+            break;
+          case 'writing-question':
+            renderMixWriting('question');
+            break;
+          case 'writing-reading':
+            renderMixWriting('reading');
+            break;
+          case 'matching':
+            renderMixMatching();
+            break;
+          default:
+            mixPracticeArea.innerHTML = '<div class="placeholder">Mode belum tersedia.</div>';
+        }
+      }
+
+      // Flashcard Grid
+      function renderMixFlashcard() {
+        if (!currentMixItems.length) {
+          mixPracticeArea.innerHTML = '<div class="placeholder">Tidak ada soal.</div>';
+          return;
+        }
+        let html = `<div class="flashcard-grid-controls"><button id="mix-refresh-grid" class="btn-secondary">🔄 Acak & Tampilkan Baru</button></div><div class="flashcard-grid" id="mix-flashcard-grid">`;
+        currentMixItems.forEach(item => {
+          const typeLabel = item.type === 'kanji' ? 'Kanji' : 'Kosakata';
+          html += `
+            <div class="grid-card" data-id="${item.id}">
+              <div class="grid-card-inner">
+                <div class="grid-card-front">
+                  <div class="question-display">${escapeHtml(item.question)}</div>
+                  <span class="type-badge">${typeLabel}</span>
+                </div>
+                <div class="grid-card-back">
+                  <div class="question-display" style="font-size:1.1rem;">${escapeHtml(item.question)}</div>
+                  <div class="reading-display">🔊 ${escapeHtml(item.reading)}</div>
+                  <div class="meaning-display">📖 ${escapeHtml(item.meaning)}</div>
+                  ${item.keterangan ? `<div style="font-size:0.7rem;color:#8b6b3c;margin-top:0.2rem;">📌 ${escapeHtml(item.keterangan)}</div>` : ''}
+                  <span class="type-badge">${typeLabel}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        html += `</div>`;
+        mixPracticeArea.innerHTML = html;
+
+        const cards = document.querySelectorAll('#mix-flashcard-grid .grid-card');
+        cards.forEach(card => {
+          card.addEventListener('click', () => {
+            cards.forEach(c => { if (c !== card) c.classList.remove('flipped'); });
+            card.classList.toggle('flipped');
+          });
+        });
+
+        document.getElementById('mix-refresh-grid').addEventListener('click', () => {
+          let pool = [...allMixedItems];
+          pool = shuffleArray(pool);
+          let limit = parseInt(mixCountInput.value, 10) || 20;
+          currentMixItems = pool.slice(0, Math.min(limit, pool.length));
+          renderMixFlashcard();
+        });
+      }
+
+      // Multiple Choice
+      function renderMixMultipleChoice(type) {
+        if (currentMixIndex >= currentMixItems.length) {
+          showMixCompletion();
+          return;
+        }
+        const item = currentMixItems[currentMixIndex];
+        const correctAnswer = type === 'meaning' ? item.meaning : item.reading;
+        let options = [correctAnswer];
+        while (options.length < 4) {
+          const rand = allMixedItems[Math.floor(Math.random() * allMixedItems.length)];
+          const distractor = type === 'meaning' ? rand.meaning : rand.reading;
+          if (!options.includes(distractor) && distractor !== correctAnswer) options.push(distractor);
+        }
+        options = shuffleArray(options);
+        const questionText = type === 'meaning' ? 'Apa arti dari soal berikut?' : 'Bagaimana cara baca soal berikut?';
+        const typeLabel = item.type === 'kanji' ? '(Kanji)' : '(Kosakata)';
+        let html = `
+          <div class="question-box">
+            <div class="question">${escapeHtml(item.question)}</div>
+            <p>${questionText} <span class="type-badge">${typeLabel}</span></p>
+          </div>
+          <div class="options-grid" id="mix-options">`;
+        options.forEach(opt => html += `<button class="option-btn" data-value="${escapeHtml(opt)}">${escapeHtml(opt)}</button>`);
+        html += `</div><div class="nav-controls"><button id="mix-next-btn" disabled>Lanjut ▶</button></div>`;
+        mixPracticeArea.innerHTML = html;
+
+        const btns = document.querySelectorAll('#mix-options .option-btn');
+        const nextBtn = document.getElementById('mix-next-btn');
+        let answered = false;
+        btns.forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            if (answered) return;
+            answered = true;
+            const selected = e.target.dataset.value;
+            if (selected === correctAnswer) {
+              e.target.classList.add('correct');
+              mixScore++;
+            } else {
+              e.target.classList.add('wrong');
+              btns.forEach(b => { if (b.dataset.value === correctAnswer) b.classList.add('correct'); });
+            }
+            nextBtn.disabled = false;
+          });
+        });
+        nextBtn.addEventListener('click', () => {
+          currentMixIndex++;
+          renderMixMultipleChoice(type);
+        });
+      }
+
+      // Writing
+      function renderMixWriting(submode) {
+        if (currentMixIndex >= currentMixItems.length) {
+          showMixCompletion();
+          return;
+        }
+        const item = currentMixItems[currentMixIndex];
+        let promptText, correctAnswer, placeholderHint;
+        if (submode === 'question') {
+          promptText = `Tulis <strong>${item.type === 'kanji' ? 'Kanji' : 'Kosakata'}</strong> untuk arti: <strong>${escapeHtml(item.meaning)}</strong><br><span style="font-size:0.9rem;">(Bacaan: ${escapeHtml(item.reading)})</span>`;
+          correctAnswer = item.question;
+          placeholderHint = item.type === 'kanji' ? 'Tulis kanji...' : 'Tulis kosakata...';
+        } else {
+          promptText = `Tulis bacaan untuk: <span style="font-size:2rem;">${escapeHtml(item.question)}</span> <span class="type-badge">${item.type === 'kanji' ? 'Kanji' : 'Kosakata'}</span>`;
+          correctAnswer = item.reading;
+          placeholderHint = 'Tulis bacaan...';
+        }
+        mixPracticeArea.innerHTML = `
+          <div class="question-box"><p>${promptText}</p></div>
+          <div class="writing-input-area">
+            <input type="text" id="mix-writing-input" placeholder="${placeholderHint}" autocomplete="off" autofocus>
+            <button id="mix-submit-writing" class="btn-primary">Periksa</button>
+          </div>
+          <div id="mix-writing-feedback" class="feedback"></div>
+          <div class="nav-controls"><button id="mix-next-btn" disabled>Lanjut ▶</button></div>
+        `;
+        const input = document.getElementById('mix-writing-input');
+        const submitBtn = document.getElementById('mix-submit-writing');
+        const feedback = document.getElementById('mix-writing-feedback');
+        const nextBtn = document.getElementById('mix-next-btn');
+        let answered = false;
+        function check() {
+          if (answered) return;
+          let userAns = input.value.trim().toLowerCase();
+          let normalized = correctAnswer.trim().toLowerCase();
+          if (userAns === normalized) {
+            feedback.innerHTML = '✅ Benar!';
+            feedback.style.color = '#2e7d32';
+            mixScore++;
+            answered = true;
+            nextBtn.disabled = false;
+            submitBtn.disabled = true;
+            input.disabled = true;
+          } else {
+            feedback.innerHTML = `❌ Salah. Jawaban benar: ${escapeHtml(correctAnswer)}`;
+            feedback.style.color = '#c0392b';
+            input.value = '';
+            input.focus();
+          }
+        }
+        submitBtn.addEventListener('click', check);
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') check(); });
+        nextBtn.addEventListener('click', () => {
+          currentMixIndex++;
+          renderMixWriting(submode);
+        });
+      }
+
+      // Matching
+      function renderMixMatching() {
+        let available = currentMixItems.filter(item => !usedMatchingMixIds.includes(item.id));
+        if (available.length === 0) {
+          mixPracticeArea.innerHTML = `<div class="placeholder">🎉 Semua pasangan berhasil dicocokkan!<br><button id="mix-reset-matching" class="btn-primary">Reset & Mulai Baru</button></div>`;
+          document.getElementById('mix-reset-matching')?.addEventListener('click', () => {
+            usedMatchingMixIds = [];
+            renderMixMatching();
+          });
+          return;
+        }
+        const maxPairs = Math.min(8, available.length);
+        const selected = shuffleArray([...available]).slice(0, maxPairs);
+        selected.forEach(s => usedMatchingMixIds.push(s.id));
+        const shuffledQuestions = shuffleArray([...selected]);
+        const shuffledMeanings = shuffleArray([...selected]);
+        let html = `<div class="matching-pairs">
+          <div class="kanji-column"><h3>📗 Soal</h3><div id="mix-question-list"></div></div>
+          <div class="meaning-column"><h3>📘 Arti</h3><div id="mix-meaning-list"></div></div>
+        </div>
+        <div class="nav-controls">
+          <button id="mix-shuffle-match">🔄 Acak Ulang</button>
+          <button id="mix-reset-match-hist">🗑️ Reset Pasangan</button>
+          <span id="mix-match-score">Pasangan: 0/${selected.length}</span>
+        </div>`;
+        mixPracticeArea.innerHTML = html;
+        const qDiv = document.getElementById('mix-question-list');
+        const mDiv = document.getElementById('mix-meaning-list');
+        shuffledQuestions.forEach(item => {
+          qDiv.innerHTML +=
+            `<div class="matching-item" data-type="question" data-id="${item.id}" data-pair="${escapeHtml(item.meaning)}">${escapeHtml(item.question)} <span class="type-badge">${item.type}</span></div>`;
+        });
+        shuffledMeanings.forEach(item => {
+          mDiv.innerHTML +=
+            `<div class="matching-item" data-type="meaning" data-id="${item.id}" data-pair="${escapeHtml(item.question)}">${escapeHtml(item.meaning)}</div>`;
+        });
+        let selectedQ = null;
+        let matchedCount = 0;
+        const total = selected.length;
+        const scoreSpan = document.getElementById('mix-match-score');
+        function updateScore() {
+          scoreSpan.textContent = `Pasangan: ${matchedCount}/${total}`;
+          if (matchedCount === total) setTimeout(() => alert('🎉 Mantap! Semua cocok!'), 100);
+        }
+        document.querySelectorAll('.matching-item').forEach(el => {
+          el.addEventListener('click', (e) => {
+            const el2 = e.currentTarget;
+            if (el2.classList.contains('matched')) return;
+            if (el2.dataset.type === 'question') {
+              document.querySelectorAll('[data-type="question"]').forEach(q => q.classList.remove(
+                'selected'));
+              el2.classList.add('selected');
+              selectedQ = el2;
+            } else {
+              if (!selectedQ) { alert('Pilih soal dulu!'); return; }
+              if (selectedQ.dataset.pair === el2.dataset.id) {
+                selectedQ.classList.add('matched');
+                el2.classList.add('matched');
+                selectedQ.classList.remove('selected');
+                matchedCount++;
+                updateScore();
+                selectedQ = null;
+              } else {
+                alert('Pasangan tidak cocok!');
+                selectedQ.classList.remove('selected');
+                selectedQ = null;
+              }
+            }
+          });
+        });
+        document.getElementById('mix-shuffle-match').addEventListener('click', () => renderMixMatching());
+        document.getElementById('mix-reset-match-hist').addEventListener('click', () => {
+          usedMatchingMixIds = [];
+          renderMixMatching();
+        });
+        updateScore();
+      }
+
+      // Mulai latihan campuran
+      function startMixPractice(useHistory = true) {
+        if (!allMixedItems.length) {
+          mixPracticeArea.innerHTML = '<div class="placeholder">❌ Data belum dimuat.</div>';
+          return;
+        }
+        let pool = allMixedItems;
+        if (useHistory) {
+          pool = allMixedItems.filter(item => !practicedMixSet.has(item.id));
+          if (pool.length === 0) {
+            mixPracticeArea.innerHTML =
+              '<div class="placeholder">🎉 Semua soal sudah dilatih! Reset histori untuk mengulang.</div>';
+            mixSessionPanel.style.display = 'flex';
+            updateMixHistori();
+            return;
+          }
+        }
+        pool = shuffleArray([...pool]);
+        let limit = parseInt(mixCountInput.value, 10);
+        if (isNaN(limit) || limit < 1) limit = 20;
+        currentMixItems = pool.slice(0, Math.min(limit, pool.length));
+        if (useHistory) {
+          currentMixItems.forEach(item => practicedMixSet.add(item.id));
+        }
+        currentMixMode = mixModeSelect.value;
+        currentMixIndex = 0;
+        mixScore = 0;
+        usedMatchingMixIds = [];
+        mixSessionPanel.style.display = 'flex';
+        updateMixHistori();
+        if (!currentMixItems.length) {
+          mixPracticeArea.innerHTML = '<div class="placeholder">Tidak ada soal dengan kriteria tersebut.</div>';
+          return;
+        }
+        renderMixPractice();
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+          if (m === '&') return '&amp;';
+          if (m === '<') return '&lt;';
+          if (m === '>') return '&gt;';
+          return m;
+        });
+      }
+
+      // Event listeners
+      mixStartBtn.addEventListener('click', () => startMixPractice(true));
+      mixRepeatBtn.addEventListener('click', () => {
+        if (currentMixItems.length) {
+          currentMixIndex = 0;
+          mixScore = 0;
+          renderMixPractice();
+        } else alert('Belum ada sesi aktif.');
+      });
+      mixNewBtn.addEventListener('click', () => startMixPractice(true));
+      mixResetBtn.addEventListener('click', () => {
+        practicedMixSet.clear();
+        updateMixHistori();
+        alert('Histori direset! Semua soal tersedia kembali.');
+      });
+
+      // Inisialisasi
+      window.addEventListener('DOMContentLoaded', async () => {
+        const success = await loadAllData();
+        if (success) {
+          updateMixHistori();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

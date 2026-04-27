@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Kosakata Master · Latihan Kosakata Interaktif</title>
+  <style>
+    /* ========== Gaya Dasar (Responsif Utama) ========== */
+    :root {
+      --primary: #2c3e50;
+      --accent: #e67e22;
+      --light-bg: #fef9e6;
+      --card-bg: #ffffff;
+      --border: #f0d5b0;
+      --text: #2c3e2f;
+      --shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', 'Noto Sans JP', 'Roboto', sans-serif;
+      background: #fef7e0;
+      color: var(--text);
+      line-height: 1.5;
+      padding: 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header, footer { text-align: center; margin: 1rem 0; }
+    h1 { color: #d35400; font-weight: 700; letter-spacing: -0.5px; }
+
+    .controls {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      align-items: flex-end;
+      justify-content: center;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border);
+    }
+
+    .select-group { display: flex; flex-direction: column; min-width: 170px; }
+    .select-group label { font-weight: 700; margin-bottom: 0.4rem; color: #b85c00; }
+
+    select, button, input[type="number"] {
+      padding: 0.7rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 40px;
+      font-size: 0.95rem;
+      background: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    input[type="number"] { border-radius: 40px; text-align: center; }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+      font-weight: bold;
+      padding: 0.7rem 1.8rem;
+      border-radius: 40px;
+    }
+    .btn-primary:hover { background: #cf711f; transform: scale(0.98);}
+
+    .practice-area {
+      background: var(--card-bg);
+      border-radius: 28px;
+      padding: 1.8rem;
+      box-shadow: var(--shadow);
+      min-height: 450px;
+    }
+
+    .placeholder { text-align: center; color: #a05e2c; font-size: 1.2rem; padding: 3rem 1rem; }
+
+    /* CHECKBOX LIST UNTUK PELAJARAN */
+    .checkbox-list {
+      display: flex;
+      flex-direction: column;
+      max-height: 210px;
+      overflow-y: auto;
+      border: 1px solid #f7d9a8;
+      border-radius: 20px;
+      padding: 0.7rem;
+      background: #fffaf0;
+      gap: 0.4rem;
+    }
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.35rem 0.3rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      word-break: break-word;
+    }
+    .checkbox-actions { display: flex; gap: 0.5rem; margin-top: 0.6rem; }
+    .btn-small {
+      padding: 0.3rem 0.9rem;
+      font-size: 0.8rem;
+      background: #f0dbc0;
+      border-radius: 40px;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Session panel */
+    .session-panel {
+      background: #fff2e0;
+      padding: 0.9rem 1.5rem;
+      border-radius: 50px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .session-info { font-weight: bold; color: #c25d00; }
+    .session-actions { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+    .btn-secondary { background: #b0a790; color: white; border: none; border-radius: 40px; padding: 0.5rem 1.2rem; }
+    .btn-warning { background: #f4b942; color: #2c2b26; border: none; border-radius: 40px; }
+
+    /* ========== FLASHCARD GRID (vocab friendly) ========== */
+    .flashcard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1.2rem;
+      margin-top: 1rem;
+    }
+    .grid-card {
+      aspect-ratio: 1 / 0.9;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+    .grid-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.4s;
+      transform-style: preserve-3d;
+      border-radius: 20px;
+    }
+    .grid-card.flipped .grid-card-inner { transform: rotateY(180deg); }
+    .grid-card-front, .grid-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 20px;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0.8rem;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid #fad6a5;
+      overflow-y: auto;
+    }
+    .grid-card-back { transform: rotateY(180deg); background: #fff2e6; }
+    .vocab-display {
+      font-size: 1.6rem;
+      font-weight: bold;
+      word-break: break-word;
+      line-height: 1.3;
+    }
+    .reading-display { font-size: 0.9rem; color: var(--accent); margin: 0.4rem 0; }
+    .meaning-display { font-size: 0.85rem; color: #3e5a3a; word-break: break-word; }
+    .keterangan-display { font-size: 0.7rem; color: #8b6b3c; margin-top: 0.3rem; font-style: italic; }
+
+    /* Multiple choice & writing */
+    .question-box { text-align: center; margin-bottom: 2rem; }
+    .question {
+      background: #fbe9cf;
+      padding: 1rem 1.5rem;
+      border-radius: 60px;
+      display: inline-block;
+      font-size: 2rem;
+      font-weight: bold;
+      word-break: break-word;
+    }
+    .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.9rem; }
+    .option-btn {
+      background: white;
+      border: 2px solid #f7cf9f;
+      border-radius: 60px;
+      padding: 0.9rem;
+      font-size: 1rem;
+      transition: 0.1s;
+      word-break: break-word;
+    }
+    .option-btn.correct { background: #d4edda; border-color: #2e7d32; }
+    .option-btn.wrong { background: #ffe0db; border-color: #c7362b; }
+
+    .writing-input-area { display: flex; gap: 1rem; justify-content: center; margin: 1.5rem 0; flex-wrap: wrap; }
+    #writing-input {
+      font-size: 1.3rem;
+      padding: 0.8rem;
+      width: 280px;
+      text-align: center;
+      border-radius: 56px;
+      border: 2px solid var(--border);
+    }
+    .feedback { font-size: 1.1rem; text-align: center; margin: 0.8rem 0; min-height: 3rem; }
+
+    /* Matching game */
+    .matching-pairs { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; }
+    .kanji-column, .meaning-column { flex: 1 1 240px; }
+    .matching-item {
+      background: #fff6ea;
+      border: 2px solid #edd5b0;
+      border-radius: 60px;
+      padding: 0.9rem 0.5rem;
+      margin: 0.6rem 0;
+      cursor: pointer;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 500;
+      word-break: break-word;
+    }
+    .matching-item.selected { background: #ffe0b5; border-color: #e67e22; }
+    .matching-item.matched { opacity: 0.6; pointer-events: none; background: #d4cfc2; text-decoration: line-through; }
+
+    .nav-controls { display: flex; justify-content: space-between; margin-top: 2rem; gap: 1rem; flex-wrap: wrap; }
+    button:disabled { opacity: 0.5; }
+
+    /* Responsive Mobile */
+    @media (max-width: 560px) {
+      body { padding: 0.6rem; }
+      .controls { flex-direction: column; align-items: stretch; }
+      .select-group { min-width: 100%; }
+      .checkbox-label { font-size: 0.85rem; }
+      .flashcard-grid { grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)); gap: 0.8rem; }
+      .vocab-display { font-size: 1.3rem; }
+      .reading-display { font-size: 0.7rem; }
+      .meaning-display { font-size: 0.7rem; }
+      .grid-card-back { padding: 0.4rem; }
+      .question { font-size: 1.7rem; padding: 0.8rem; }
+      .option-btn { padding: 0.7rem; font-size: 0.9rem; }
+      .writing-input-area { flex-direction: column; align-items: center; }
+      .matching-item { font-size: 0.9rem; }
+      .session-panel { flex-direction: column; align-items: stretch; gap: 0.8rem; text-align: center; }
+      .btn-primary, .btn-secondary { width: 100%; }
+    }
+    @media (max-width: 380px) {
+      .flashcard-grid { grid-template-columns: 1fr 1fr; }
+      .vocab-display { font-size: 1rem; }
+    }
+    .info-note { padding: 0.5rem; color: #8a6e45; font-style: italic; font-size: 0.8rem; }
+    .flashcard-grid-controls { margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>📖 Kosakata Master</h1>
+  <p>Pilih tingkat & bab (bisa lebih dari satu), lalu mode latihan.</p>
+</header>
+
+<main>
+  <section class="controls">
+    <div class="select-group">
+      <label>📘 Tingkat (Buku):</label>
+      <select id="level-select"></select>
+    </div>
+    <div class="select-group" id="lesson-checkbox-group">
+      <label>📌 Bab Pelajaran:</label>
+      <div id="lesson-checkboxes" class="checkbox-list"></div>
+      <div class="checkbox-actions">
+        <button type="button" id="select-all-lessons" class="btn-small">✓ Semua</button>
+        <button type="button" id="deselect-all-lessons" class="btn-small">✗ Bersihkan</button>
+      </div>
+    </div>
+    <div class="select-group">
+      <label>🎮 Mode Latihan:</label>
+      <select id="mode-select">
+        <option value="flashcard">🗂️ Flashcard (Grid)</option>
+        <option value="multiple-meaning">❓ Pilihan Ganda (Arti)</option>
+        <option value="multiple-reading">🔊 Pilihan Ganda (Bacaan/Romaji)</option>
+        <option value="writing-vocab">✍️ Tulis Kosakata</option>
+        <option value="writing-reading">✍️ Tulis Bacaan (Romaji)</option>
+        <option value="matching">🃏 Mencocokkan (Kosakata ↔ Arti)</option>
+      </select>
+    </div>
+    <div class="select-group">
+      <label>🔢 Jumlah Kartu:</label>
+      <input type="number" id="card-count" min="1" max="150" value="20">
+    </div>
+    <button id="start-btn" class="btn-primary">Mulai Latihan</button>
+  </section>
+
+  <section id="session-panel" class="session-panel" style="display: none;">
+    <div class="session-info"><span id="histori-count">Kosakata dilatih: 0</span></div>
+    <div class="session-actions">
+      <button id="repeat-session-btn" class="btn-secondary">🔄 Ulangi Sesi</button>
+      <button id="new-session-btn" class="btn-secondary">✨ Latihan Baru</button>
+      <button id="reset-history-btn" class="btn-warning">🗑️ Reset Histori</button>
+    </div>
+  </section>
+
+  <section id="practice-area" class="practice-area">
+    <div class="placeholder">👆 Pilih tingkat & bab, lalu klik "Mulai Latihan"</div>
+  </section>
+</main>
+<footer><p>🇯🇵 Belajar kosakata jadi mudah · Data lengkap & ramah mobile</p></footer>
+
+<script>
+  (function() {
+    // ---------- VARIABEL GLOBAL ----------
+    let rawLessons = [];           // array of { level, bab, judul, kosakataList }
+    let groupedByLevel = new Map(); // level -> array lesson data
+    let currentLevel = '';
+    let currentSelectedLessons = [];
+    let currentMode = '';
+    let currentVocabItems = [];    // array of {kata, romaji, arti, keterangan, id}
+    let currentIndex = 0;
+    let score = 0;
+    let practicedVocabSet = new Set(); // simpan id unik
+    let usedMatchingPairs = [];
+
+    // DOM elements
+    let levelSelect, lessonCheckboxesDiv, modeSelect, startBtn, practiceArea, cardCountInput;
+    let sessionPanel, historiCountSpan, repeatBtn, newSessionBtn, resetHistoryBtn;
+    let selectAllBtn, deselectAllBtn;
+
+    // Helper: buat ID unik per kosakata (level+ bab + indeks kata)
+    function makeVocabId(lessonIdx, kataIdx) {
+      return `lvl_${lessonIdx}_kata_${kataIdx}`;
+    }
+
+    // Proses data dari JSON: atur level yang hilang (carry-over) dan bangun lesson objects
+    async function loadKosakataData() {
+      try {
+        const response = await fetch('Data%20Kosakata.json');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        // Proses carry-over level
+        let currentCarryLevel = 'Pemula';
+        const processedLessons = [];
+        for (let i = 0; i < data.length; i++) {
+          const entry = data[i];
+          let lessonLevel = entry.level ? entry.level : currentCarryLevel;
+          if (entry.level) currentCarryLevel = entry.level;
+          if (!entry.bab) continue; // safety
+          const vocabList = entry.kosakata.map((vocab, idx) => ({
+            kata: vocab.kata,
+            romaji: vocab.romaji,
+            arti: vocab.arti,
+            keterangan: vocab.keterangan || '',
+            id: makeVocabId(i, idx)
+          }));
+          processedLessons.push({
+            level: lessonLevel,
+            bab: entry.bab,
+            judul: entry.judul,
+            vocabItems: vocabList
+          });
+        }
+        // Group by level
+        groupedByLevel.clear();
+        processedLessons.forEach(lesson => {
+          const levelKey = lesson.level;
+          if (!groupedByLevel.has(levelKey)) groupedByLevel.set(levelKey, []);
+          groupedByLevel.get(levelKey).push(lesson);
+        });
+        rawLessons = processedLessons;
+        return true;
+      } catch (err) {
+        alert('Gagal memuat Data Kosakata.json. Pastikan file tersedia!\n' + err.message);
+        return false;
+      }
+    }
+
+    // Inisialisasi dropdown level
+    function initLevelSelect() {
+      levelSelect.innerHTML = '';
+      const levels = Array.from(groupedByLevel.keys()).sort();
+      levels.forEach(level => {
+        const opt = document.createElement('option');
+        opt.value = level;
+        opt.textContent = level;
+        levelSelect.appendChild(opt);
+      });
+      const allOpt = document.createElement('option');
+      allOpt.value = 'all';
+      allOpt.textContent = '📚 Semua Tingkat';
+      levelSelect.appendChild(allOpt);
+      if (levels.length) levelSelect.value = levels[0];
+      renderLessonCheckboxes(levelSelect.value);
+    }
+
+    // Tampilkan checkbox pelajaran berdasarkan level yang dipilih
+    function renderLessonCheckboxes(levelKey) {
+      lessonCheckboxesDiv.innerHTML = '';
+      if (!groupedByLevel.size) return;
+      if (levelKey === 'all') {
+        lessonCheckboxesDiv.innerHTML = '<div class="info-note">✅ Semua bab dari semua tingkat akan dipilih.</div>';
+        return;
+      }
+      const lessons = groupedByLevel.get(levelKey) || [];
+      if (lessons.length === 0) {
+        lessonCheckboxesDiv.innerHTML = '<div class="info-note">Tidak ada bab pada tingkat ini.</div>';
+        return;
+      }
+      lessons.forEach((lesson, idx) => {
+        const label = document.createElement('label');
+        label.className = 'checkbox-label';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.value = idx;  // simpan index relatif di level
+        cb.checked = true;
+        label.appendChild(cb);
+        label.appendChild(document.createTextNode(`Bab ${lesson.bab}: ${lesson.judul}`));
+        lessonCheckboxesDiv.appendChild(label);
+      });
+    }
+
+    // Mendapatkan item kosakata dari level+pelajaran yang dipilih
+    function getSelectedVocabItems() {
+      const level = levelSelect.value;
+      if (level === 'all') {
+        let allItems = [];
+        for (let lessons of groupedByLevel.values()) {
+          for (let lesson of lessons) {
+            allItems.push(...lesson.vocabItems);
+          }
+        }
+        return allItems;
+      } else {
+        const checkboxes = lessonCheckboxesDiv.querySelectorAll('input[type="checkbox"]:checked');
+        const selectedLessonIndices = Array.from(checkboxes).map(cb => parseInt(cb.value));
+        const lessons = groupedByLevel.get(level) || [];
+        const selectedLessons = selectedLessonIndices.map(idx => lessons[idx]).filter(l => l);
+        let items = [];
+        selectedLessons.forEach(lesson => {
+          items.push(...lesson.vocabItems);
+        });
+        return items;
+      }
+    }
+
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function updateHistoriCount() {
+      historiCountSpan.textContent = `Kosakata dilatih: ${practicedVocabSet.size}`;
+    }
+
+    function showCompletionScreen() {
+      practiceArea.innerHTML = `<div class="placeholder">🎉 Latihan selesai! Skor akhir: ${score}/${currentVocabItems.length}<br>✨ Hebat, terus semangat! ✨</div>`;
+    }
+
+    // Dispatch tampilan sesuai mode
+    function renderPractice() {
+      switch (currentMode) {
+        case 'flashcard': renderFlashcardGrid(); break;
+        case 'multiple-meaning': renderMultipleChoice('arti'); break;
+        case 'multiple-reading': renderMultipleChoice('romaji'); break;
+        case 'writing-vocab': renderWriting('vocab'); break;
+        case 'writing-reading': renderWriting('reading'); break;
+        case 'matching': renderMatchingGame(); break;
+        default: practiceArea.innerHTML = '<div class="placeholder">Mode belum tersedia.</div>';
+      }
+    }
+
+    // ----- FLASHCARD GRID (responsive & word-break)
+    function renderFlashcardGrid() {
+      if (!currentVocabItems.length) {
+        practiceArea.innerHTML = '<div class="placeholder">Tidak ada kosakata.</div>';
+        return;
+      }
+      let html = `<div class="flashcard-grid-controls"><button id="refresh-grid-btn" class="btn-secondary">🔄 Acak & Tampilkan Baru</button></div><div class="flashcard-grid" id="flashcard-grid">`;
+      currentVocabItems.forEach(item => {
+        let keteranganHtml = item.keterangan ? `<div class="keterangan-display">📌 ${item.keterangan}</div>` : '';
+        html += `
+          <div class="grid-card" data-id="${item.id}">
+            <div class="grid-card-inner">
+              <div class="grid-card-front">
+                <div class="vocab-display">${escapeHtml(item.kata)}</div>
+              </div>
+              <div class="grid-card-back">
+                <div class="vocab-display" style="font-size:1.2rem;">${escapeHtml(item.kata)}</div>
+                <div class="reading-display">🔊 ${escapeHtml(item.romaji)}</div>
+                <div class="meaning-display">📖 ${escapeHtml(item.arti)}</div>
+                ${keteranganHtml}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+      practiceArea.innerHTML = html;
+      const cards = document.querySelectorAll('.grid-card');
+      cards.forEach(card => {
+        card.addEventListener('click', () => {
+          cards.forEach(c => { if (c !== card) c.classList.remove('flipped'); });
+          card.classList.toggle('flipped');
+        });
+      });
+      document.getElementById('refresh-grid-btn').addEventListener('click', () => {
+        let allItems = getSelectedVocabItems();
+        allItems = shuffleArray([...allItems]);
+        let limit = parseInt(cardCountInput.value, 10) || 20;
+        currentVocabItems = allItems.slice(0, Math.min(limit, allItems.length));
+        renderFlashcardGrid();
+      });
+    }
+
+    // Multiple choice (arti atau romaji)
+    function renderMultipleChoice(type) {
+      if (currentIndex >= currentVocabItems.length) {
+        showCompletionScreen();
+        return;
+      }
+      const item = currentVocabItems[currentIndex];
+      const correctAnswer = type === 'arti' ? item.arti : item.romaji;
+      let options = [correctAnswer];
+      while (options.length < 4) {
+        const randItem = currentVocabItems[Math.floor(Math.random() * currentVocabItems.length)];
+        const distractor = type === 'arti' ? randItem.arti : randItem.romaji;
+        if (!options.includes(distractor) && distractor !== correctAnswer) options.push(distractor);
+      }
+      options = shuffleArray(options);
+      const questionText = type === 'arti' ? 'Arti dari kosakata berikut?' : 'Bagaimana cara baca (romaji) kosakata ini?';
+      let html = `<div class="question-box"><div class="question">${escapeHtml(item.kata)}</div><p>${questionText}</p></div>
+                  <div class="options-grid" id="options-container">`;
+      options.forEach(opt => html += `<button class="option-btn" data-value="${escapeHtml(opt)}">${escapeHtml(opt)}</button>`);
+      html += `</div><div class="nav-controls"><button id="next-question-btn" disabled>Lanjut ▶</button></div>`;
+      practiceArea.innerHTML = html;
+      const btns = document.querySelectorAll('.option-btn');
+      const nextBtn = document.getElementById('next-question-btn');
+      let answered = false;
+      btns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          if (answered) return;
+          answered = true;
+          const selected = e.target.dataset.value;
+          if (selected === correctAnswer) {
+            e.target.classList.add('correct');
+            score++;
+          } else {
+            e.target.classList.add('wrong');
+            btns.forEach(b => { if (b.dataset.value === correctAnswer) b.classList.add('correct'); });
+          }
+          nextBtn.disabled = false;
+        });
+      });
+      nextBtn.addEventListener('click', () => { currentIndex++; renderMultipleChoice(type); });
+    }
+
+    // Writing: Tulis kosakata (kata) atau tulis bacaan (romaji)
+    function renderWriting(submode) {
+      if (currentIndex >= currentVocabItems.length) {
+        showCompletionScreen();
+        return;
+      }
+      const item = currentVocabItems[currentIndex];
+      let promptText = '';
+      let correctAnswer = '';
+      let placeholderHint = '';
+      if (submode === 'vocab') {
+        promptText = `Tulis kosakata Jepang untuk arti: <strong>${escapeHtml(item.arti)}</strong><br><span style="font-size:0.9rem;">(Bacaan: ${escapeHtml(item.romaji)})</span>`;
+        correctAnswer = item.kata;
+        placeholderHint = 'Contoh: おはようございます';
+      } else {
+        promptText = `Tulis bacaan (romaji) untuk: <span style="font-size:2rem;">${escapeHtml(item.kata)}</span>`;
+        correctAnswer = item.romaji;
+        placeholderHint = 'Tulis huruf romaji...';
+      }
+      practiceArea.innerHTML = `
+        <div class="question-box"><p>${promptText}</p></div>
+        <div class="writing-input-area">
+          <input type="text" id="writing-input" placeholder="${placeholderHint}" autocomplete="off" autofocus>
+          <button id="submit-writing-btn" class="btn-primary">Periksa</button>
+        </div>
+        <div id="writing-feedback" class="feedback"></div>
+        <div class="nav-controls"><button id="next-question-btn" disabled>Lanjut ▶</button></div>
+      `;
+      const input = document.getElementById('writing-input');
+      const submitBtn = document.getElementById('submit-writing-btn');
+      const feedback = document.getElementById('writing-feedback');
+      const nextBtn = document.getElementById('next-question-btn');
+      let answered = false;
+      function checkAnswer() {
+        if (answered) return;
+        let userAns = input.value.trim().toLowerCase();
+        let normalizedCorrect = correctAnswer.trim().toLowerCase();
+        if (userAns === normalizedCorrect) {
+          feedback.innerHTML = '✅ Benar! Bagus sekali.';
+          feedback.style.color = '#2e7d32';
+          score++;
+          answered = true;
+          nextBtn.disabled = false;
+          submitBtn.disabled = true;
+          input.disabled = true;
+        } else {
+          feedback.innerHTML = `❌ Salah. Jawaban benar: ${escapeHtml(correctAnswer)}. Coba lagi nanti.`;
+          feedback.style.color = '#c0392b';
+          input.value = '';
+          input.focus();
+        }
+      }
+      submitBtn.addEventListener('click', checkAnswer);
+      input.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
+      nextBtn.addEventListener('click', () => { currentIndex++; renderWriting(submode); });
+    }
+
+    // Matching game (kosakata ↔ arti)
+    function renderMatchingGame() {
+      let available = currentVocabItems.filter(item => !usedMatchingPairs.includes(item.id));
+      if (available.length === 0) {
+        practiceArea.innerHTML = `<div class="placeholder">🎉 Semua pasangan berhasil dicocokkan!<br><button id="reset-matching-full" class="btn-primary">Reset Pasangan & Mulai Baru</button></div>`;
+        document.getElementById('reset-matching-full')?.addEventListener('click', () => {
+          usedMatchingPairs = [];
+          renderMatchingGame();
+        });
+        return;
+      }
+      const maxPairs = Math.min(8, available.length);
+      const selectedPairs = shuffleArray([...available]).slice(0, maxPairs);
+      selectedPairs.forEach(p => usedMatchingPairs.push(p.id));
+      const shuffledKata = shuffleArray([...selectedPairs]);
+      const shuffledArti = shuffleArray([...selectedPairs]);
+      let html = `<div class="matching-pairs">
+        <div class="kanji-column"><h3>📗 Kosakata</h3><div id="kata-list"></div></div>
+        <div class="meaning-column"><h3>📘 Arti</h3><div id="arti-list"></div></div>
+      </div>
+      <div class="nav-controls">
+        <button id="shuffle-match-btn">🔄 Acak Ulang</button>
+        <button id="reset-match-hist-btn">🗑️ Reset Pasangan</button>
+        <span id="match-score">Pasangan: 0/${selectedPairs.length}</span>
+      </div>`;
+      practiceArea.innerHTML = html;
+      const kataDiv = document.getElementById('kata-list');
+      const artiDiv = document.getElementById('arti-list');
+      shuffledKata.forEach(item => {
+        kataDiv.innerHTML += `<div class="matching-item" data-type="kata" data-id="${item.id}" data-pair="${item.arti}">${escapeHtml(item.kata)}</div>`;
+      });
+      shuffledArti.forEach(item => {
+        artiDiv.innerHTML += `<div class="matching-item" data-type="arti" data-id="${item.id}" data-pair="${item.kata}">${escapeHtml(item.arti)}</div>`;
+      });
+      let selectedKata = null;
+      let matchedCount = 0;
+      const total = selectedPairs.length;
+      const matchSpan = document.getElementById('match-score');
+      function updateMatch() { matchSpan.textContent = `Pasangan: ${matchedCount}/${total}`; if (matchedCount === total) setTimeout(() => alert('🎉 Mantap! Semua cocok!'), 100); }
+      const clickHandler = (e) => {
+        const el = e.currentTarget;
+        if (el.classList.contains('matched')) return;
+        if (el.dataset.type === 'kata') {
+          document.querySelectorAll('[data-type="kata"]').forEach(k => k.classList.remove('selected'));
+          el.classList.add('selected');
+          selectedKata = el;
+        } else {
+          if (!selectedKata) { alert('Pilih kosakata dulu!'); return; }
+          if (selectedKata.dataset.pair === el.dataset.pair) {
+            selectedKata.classList.add('matched');
+            el.classList.add('matched');
+            selectedKata.classList.remove('selected');
+            matchedCount++;
+            updateMatch();
+            selectedKata = null;
+          } else {
+            alert('Pasangan tidak cocok! Coba lagi.');
+            selectedKata.classList.remove('selected');
+            selectedKata = null;
+          }
+        }
+      };
+      document.querySelectorAll('.matching-item').forEach(el => el.addEventListener('click', clickHandler));
+      document.getElementById('shuffle-match-btn').addEventListener('click', () => renderMatchingGame());
+      document.getElementById('reset-match-hist-btn').addEventListener('click', () => {
+        usedMatchingPairs = [];
+        renderMatchingGame();
+      });
+      updateMatch();
+    }
+
+    // Mulai latihan (dengan histori optional)
+    function startPractice(useHistory = true) {
+      const allVocab = getSelectedVocabItems();
+      if (allVocab.length === 0) {
+        practiceArea.innerHTML = '<div class="placeholder">❌ Tidak ada kosakata yang dipilih. Pilih bab terlebih dahulu.</div>';
+        return;
+      }
+      let pool = allVocab;
+      if (useHistory) {
+        pool = allVocab.filter(v => !practicedVocabSet.has(v.id));
+        if (pool.length === 0) {
+          practiceArea.innerHTML = '<div class="placeholder">🎉 Semua kosakata sudah dilatih! Reset histori untuk latihan baru.</div>';
+          sessionPanel.style.display = 'flex';
+          updateHistoriCount();
+          return;
+        }
+      }
+      pool = shuffleArray([...pool]);
+      let limit = parseInt(cardCountInput.value, 10);
+      if (isNaN(limit) || limit < 1) limit = 20;
+      currentVocabItems = pool.slice(0, Math.min(limit, pool.length));
+      if (useHistory) {
+        currentVocabItems.forEach(item => practicedVocabSet.add(item.id));
+      }
+      currentMode = modeSelect.value;
+      currentIndex = 0;
+      score = 0;
+      usedMatchingPairs = [];
+      sessionPanel.style.display = 'flex';
+      updateHistoriCount();
+      if (!currentVocabItems.length) {
+        practiceArea.innerHTML = '<div class="placeholder">Tidak ada kosakata dengan kriteria tersebut.</div>';
+        return;
+      }
+      renderPractice();
+    }
+
+    // Event handlers
+    function bindEvents() {
+      levelSelect.addEventListener('change', (e) => renderLessonCheckboxes(e.target.value));
+      selectAllBtn.addEventListener('click', () => {
+        const cbs = lessonCheckboxesDiv.querySelectorAll('input[type="checkbox"]');
+        cbs.forEach(cb => cb.checked = true);
+      });
+      deselectAllBtn.addEventListener('click', () => {
+        const cbs = lessonCheckboxesDiv.querySelectorAll('input[type="checkbox"]');
+        cbs.forEach(cb => cb.checked = false);
+      });
+      startBtn.addEventListener('click', () => startPractice(true));
+      repeatSessionBtn.addEventListener('click', () => {
+        if (currentVocabItems.length) { currentIndex = 0; score = 0; renderPractice(); }
+        else alert('Belum ada sesi aktif.');
+      });
+      newSessionBtn.addEventListener('click', () => startPractice(true));
+      resetHistoryBtn.addEventListener('click', () => {
+        practicedVocabSet.clear();
+        updateHistoriCount();
+        alert('Histori latihan direset! Semua kosakata tersedia kembali.');
+      });
+    }
+
+    // Helper: escape html
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+        return c;
+      });
+    }
+
+    // Inisialisasi utama
+    window.addEventListener('DOMContentLoaded', async () => {
+      levelSelect = document.getElementById('level-select');
+      lessonCheckboxesDiv = document.getElementById('lesson-checkboxes');
+      modeSelect = document.getElementById('mode-select');
+      startBtn = document.getElementById('start-btn');
+      practiceArea = document.getElementById('practice-area');
+      cardCountInput = document.getElementById('card-count');
+      sessionPanel = document.getElementById('session-panel');
+      historiCountSpan = document.getElementById('histori-count');
+      repeatSessionBtn = document.getElementById('repeat-session-btn');
+      newSessionBtn = document.getElementById('new-session-btn');
+      resetHistoryBtn = document.getElementById('reset-history-btn');
+      selectAllBtn = document.getElementById('select-all-lessons');
+      deselectAllBtn = document.getElementById('deselect-all-lessons');
+
+      const success = await loadKosakataData();
+      if (!success) {
+        practiceArea.innerHTML = '<div class="placeholder">❌ Gagal memuat Data Kosakata.json. Pastikan file tersedia dan akses melalui HTTP server.</div>';
+        return;
+      }
+      initLevelSelect();
+      updateHistoriCount();
+      bindEvents();
+    });
+  })();
+</script>
+</body>
+</html>
