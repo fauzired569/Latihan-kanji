@@ -1,3 +1,4 @@
+<!-- ==================== KANJI.HTML ==================== -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -294,7 +295,7 @@
     <p>🇯🇵 Selamat belajar! · Data berdasarkan buku ajar</p>
   </footer>
 
-  <!-- ==================== JAVASCRIPT (diperbaiki dengan Data%20Kanji.json) ==================== -->
+  <!-- ==================== JAVASCRIPT (diperbaiki dengan Data_Kanji.json) ==================== -->
   <script>
     (function() {
       // Variabel global seperti sebelumnya
@@ -316,16 +317,16 @@
       // Data kanji akan di-load dari JSON (diperbaiki)
       let kanjiData = null;
 
-      // ---------- LOAD DATA JSON (menggunakan Data%20Kanji.json) ----------
+      // ---------- LOAD DATA JSON (menggunakan Data_Kanji.json) ----------
       async function loadKanjiData() {
         try {
-          // PERBAIKAN: menggunakan nama file dari deepseek_javascript_20260427_6ca3a9.js
-          const response = await fetch('Data%20Kanji.json');
+          // PERBAIKAN: menggunakan nama file yang sesuai dengan data yang diberikan
+          const response = await fetch('Data_Kanji.json');
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
           kanjiData = await response.json();
           return true;
         } catch (err) {
-          alert('Gagal memuat Data Kanji.json. Pastikan file berada di folder yang sama dan diakses melalui server lokal (bukan file://).\nDetail: ' + err.message);
+          alert('Gagal memuat Data_Kanji.json. Pastikan file berada di folder yang sama dan diakses melalui server lokal (bukan file://).\nDetail: ' + err.message);
           console.error(err);
           return false;
         }
@@ -788,7 +789,7 @@
         // Load data (nama file sudah diperbaiki)
         const success = await loadKanjiData();
         if (!success) {
-          practiceArea.innerHTML = '<div class="placeholder">❌ Gagal memuat Data Kanji.json. Pastikan file tersedia dan diakses melalui server HTTP.</div>';
+          practiceArea.innerHTML = '<div class="placeholder">❌ Gagal memuat Data_Kanji.json. Pastikan file tersedia dan diakses melalui server HTTP.</div>';
           return;
         }
 
