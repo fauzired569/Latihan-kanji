@@ -1,3 +1,4 @@
+<!-- ==================== INDEX.HTML ==================== -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -607,12 +608,12 @@
       const mixNewBtn = document.getElementById('mix-new-btn');
       const mixResetBtn = document.getElementById('mix-reset-btn');
 
-      // Load data JSON
+      // Load data JSON (PERBAIKAN: Nama file mengikuti data yang diberikan)
       async function loadAllData() {
         try {
           const [kanjiRes, kosakataRes] = await Promise.all([
-            fetch('Data%20Kanji.json'),
-            fetch('Data%20Kosakata.json')
+            fetch('Data_Kanji.json'),
+            fetch('Data_Kosakata.json')
           ]);
           if (!kanjiRes.ok || !kosakataRes.ok) throw new Error('Gagal memuat data JSON');
           const kanjiData = await kanjiRes.json();
@@ -637,7 +638,7 @@
             }
           }
 
-          // Proses data Kosakata (carry-over level)
+          // Proses data Kosakata (dengan dukungan carry-over level)
           let currentLevel = 'Pemula';
           for (let i = 0; i < kosakataData.length; i++) {
             const entry = kosakataData[i];
@@ -664,7 +665,7 @@
         } catch (err) {
           console.error(err);
           mixPracticeArea.innerHTML =
-            '<div class="placeholder">❌ Gagal memuat data. Pastikan file Data Kanji.json dan Data Kosakata.json tersedia.</div>';
+            '<div class="placeholder">❌ Gagal memuat data. Pastikan file Data_Kanji.json dan Data_Kosakata.json tersedia di folder yang sama.</div>';
           return false;
         }
       }
