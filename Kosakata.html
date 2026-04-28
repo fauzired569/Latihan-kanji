@@ -1,3 +1,4 @@
+<!-- ==================== KOSAKATA.HTML ==================== -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -337,7 +338,7 @@
     // Proses data dari JSON: atur level yang hilang (carry-over) dan bangun lesson objects
     async function loadKosakataData() {
       try {
-        const response = await fetch('Data%20Kosakata.json');
+        const response = await fetch('Data_Kosakata.json');
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
         // Proses carry-over level
@@ -372,7 +373,7 @@
         rawLessons = processedLessons;
         return true;
       } catch (err) {
-        alert('Gagal memuat Data Kosakata.json. Pastikan file tersedia!\n' + err.message);
+        alert('Gagal memuat Data_Kosakata.json. Pastikan file tersedia!\n' + err.message);
         return false;
       }
     }
@@ -756,8 +757,6 @@
         if (m === '<') return '&lt;';
         if (m === '>') return '&gt;';
         return m;
-      }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-        return c;
       });
     }
 
@@ -779,7 +778,7 @@
 
       const success = await loadKosakataData();
       if (!success) {
-        practiceArea.innerHTML = '<div class="placeholder">❌ Gagal memuat Data Kosakata.json. Pastikan file tersedia dan akses melalui HTTP server.</div>';
+        practiceArea.innerHTML = '<div class="placeholder">❌ Gagal memuat Data_Kosakata.json. Pastikan file tersedia dan akses melalui HTTP server.</div>';
         return;
       }
       initLevelSelect();
